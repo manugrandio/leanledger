@@ -1,1 +1,16 @@
-{{ name }}
+<table>
+  <thead>
+    <tr>
+      <th>Accout</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for record in records %}
+    <tr>
+      <td>{{ record.account }}</td>
+      <td>{{ record.amount }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>

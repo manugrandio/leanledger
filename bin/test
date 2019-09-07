@@ -1,4 +1,4 @@
 #!/bin/bash
 
-python manage.py test -v 2 \
+python manage.py test \
     leanledger.records.tests.test_views
