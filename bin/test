@@ -1,4 +1,5 @@
 #!/bin/bash
 
 python manage.py test \
-    leanledger.records.tests.test_views
+    leanledger.records.tests.test_models
+    #leanledger.records.tests.test_views
