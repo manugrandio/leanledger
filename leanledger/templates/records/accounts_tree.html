@@ -1,8 +1,8 @@
 <ul>
   {% for account in accounts %}
   <li>{{ account.name }}
-    {% if account.children %}
-      {% include 'records/accounts_tree.html' with accounts=account.children %}
+    {% if account.children.exists %}
+      {% include 'records/accounts_tree.html' with accounts=account.children.all %}
     {% endif %}
   </li>
   {% endfor %}

@@ -3,6 +3,8 @@ from collections import namedtuple
 
 from django.shortcuts import render
 
+from leanledger.records.models import Account
+
 
 Record = namedtuple('Record', 'account, amount')
 
@@ -19,6 +21,5 @@ def records_list(request):
 
 
 def accounts_tree(request):
-    return render(request, 'records/accounts_tree.html', {
-        'accounts': json.loads(request.body)['accounts_destination'],
-    })
+    accounts = Account.objects.filter(parent=None)
+    return render(request, 'records/accounts_tree.html', {'accounts': accounts})
