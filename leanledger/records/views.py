@@ -21,5 +21,9 @@ def records_list(request):
 
 
 def accounts_tree(request):
-    accounts = Account.objects.filter(parent=None)
-    return render(request, 'records/accounts_tree.html', {'accounts': accounts})
+    destination_accounts = Account.objects.destination_accounts()
+    origin_accounts = Account.objects.origin_accounts()
+    return render(request, 'records/accounts_list.html', {
+        'destination_accounts': destination_accounts,
+        'origin_accounts': origin_accounts,
+    })

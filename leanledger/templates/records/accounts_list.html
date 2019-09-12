@@ -1,0 +1,15 @@
+<h2>Destination Accounts</h2>
+
+{% if destination_accounts.exists %}
+  {% include 'records/accounts_tree.html' with accounts=destination_accounts %}
+{% else %}
+  <p>There are no destination accounts.</p>
+{% endif %}
+
+<h2>Origin Acounts</h2>
+
+{% if destination_accounts.exists %}
+  {% include 'records/accounts_tree.html' with accounts=origin_accounts %}
+{% else %}
+  <p>There are no origin accounts.</p>
+{% endif %}

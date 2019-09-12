@@ -7,6 +7,14 @@ class Ledger(models.Model):
     name = models.CharField(max_length=64)
 
 
+class AccountManager(models.Manager):
+    def destination_accounts(self):
+        return self.filter(parent=None, type=Account.DESTINATION)
+
+    def origin_accounts(self):
+        return self.filter(parent=None, type=Account.ORIGIN)
+
+
 class Account(models.Model):
     ORIGIN = 'O'
     DESTINATION = 'D'
@@ -18,6 +26,8 @@ class Account(models.Model):
     name = models.CharField(max_length=64)
     parent = models.ForeignKey(
         'self', null=True, on_delete=models.CASCADE, related_name='children')
+
+    objects = AccountManager()
 
 
 # class Record(models.Model):
