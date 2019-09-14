@@ -24,17 +24,20 @@ class Account(models.Model):
     )
     type = models.CharField(max_length=1, choices=ACCOUNT_TYPES)
     name = models.CharField(max_length=64)
+    ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, related_name='accounts')
     parent = models.ForeignKey(
         'self', null=True, on_delete=models.CASCADE, related_name='children')
 
     objects = AccountManager()
 
 
-# class Record(models.Model):
-    # ledger = models.ForeignKey(Ledger)
+class Record(models.Model):
+    ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, related_name='records')
+    date = models.DateField()
+    # TODO on_delete=CASCASDE when Accounts are deleted
 
 
-# class Variation(models.Model):
-    # record = models.ForeignKey(Record)
-    # account = models.ForeignKey(Account)
-    # amount = models.Decimal()  # Has to be greater than 0! (cannot be 0 or less)
+class Variation(models.Model):
+    record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='variations')
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='variations')
+    amount = models.DecimalField(max_digits=16, decimal_places=2)
