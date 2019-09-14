@@ -1,23 +1,59 @@
 <html>
 <head>
   <title>Records</title>
+  <style>
+  .records {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .record {
+    margin-top: 2em;
+  }
+
+  .debit-variation {
+    padding-right: 30px;
+  }
+
+  .credit-variation {
+    padding-left: 30px;
+  }
+
+  .account {
+    float: left;
+  }
+
+  .amount {
+    float: right;
+  }
+
+  .clear {
+    clear: both;
+  }
+  </style>
 </head>
 <body>
-  <table>
-    <thead>
-      <tr>
-        <th>Accout</th>
-        <th>Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for record in records %}
-      <tr>
-        <td>{{ record.account }}</td>
-        <td>{{ record.amount }}</td>
-      </tr>
+  <div class="records">
+    {% for record in records %}
+    <div class="record">
+      <span><strong>{{ record.date }}</strong></span>
+      {% for debit_variation in record.debit_variations %}
+      <div class="debit-variation">
+        <div class="account">{{ debit_variation.account }}</div>
+        <div class="amount">{{ debit_variation.amount }}</div>
+        <div class="clear"></div>
+      </div>
       {% endfor %}
-    </tbody>
-  </table>
+
+      {% for credit_variation in record.credit_variations %}
+      <div class="credit-variation">
+        <div class="account">{{ credit_variation.account }}</div>
+        <div class="amount">{{ credit_variation.amount }}</div>
+        <div class="clear"></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
 </body>
 </html>

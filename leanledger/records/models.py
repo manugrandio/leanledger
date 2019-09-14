@@ -37,3 +37,4 @@ class Account(models.Model):
 # class Variation(models.Model):
     # record = models.ForeignKey(Record)
     # account = models.ForeignKey(Account)
+    # amount = models.Decimal()  # Has to be greater than 0! (cannot be 0 or less)
