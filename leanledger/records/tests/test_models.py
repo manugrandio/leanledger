@@ -55,16 +55,16 @@ class TestRecord(TestCase):
         cls.record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
         cls.account_cash = Account.objects.create(
             name='cash', type=Account.DESTINATION, ledger=cls.ledger)
-        cls.account_expense = Account.objects.create(
-            name='expense', type=Account.ORIGIN, ledger=cls.ledger)
+        cls.account_expense_one = Account.objects.create(
+            name='expense one', type=Account.ORIGIN, ledger=cls.ledger)
+        cls.account_expense_two = Account.objects.create(
+            name='expense two', type=Account.ORIGIN, ledger=cls.ledger)
         cls.variation_cash = Variation.objects.create(
             amount=-100, record=cls.record, account=cls.account_cash)
-        cls.variation_expense = Variation.objects.create(
-            amount=-100, record=cls.record, account=cls.account_expense)
-
-    def test_account_names(self):
-        names = {variation.account.name for variation in self.record.variations.all()}
-        self.assertEqual(names, {'cash', 'expense'})
+        cls.variation_expense_one = Variation.objects.create(
+            amount=-50, record=cls.record, account=cls.account_expense_one)
+        cls.variation_expense_two = Variation.objects.create(
+            amount=-50, record=cls.record, account=cls.account_expense_two)
 
     @classmethod
     def tearDownClass(cls):
@@ -72,3 +72,19 @@ class TestRecord(TestCase):
         cls.ledger.delete()
         Account.objects.all().delete()
         Record.objects.all().delete()
+
+    def test_variations_by_type(self):
+        variations_by_type_iter = self.record.variations_by_type()
+        variations_by_type = {
+            type_: variations for type_, variations in variations_by_type_iter.items()
+        }
+
+        self.assertEqual(variations_by_type, {
+            Variation.DEBIT: [
+                self.variation_expense_one,
+                self.variation_expense_two,
+            ],
+            Variation.CREDIT: [
+                self.variation_cash,
+            ],
+        })
