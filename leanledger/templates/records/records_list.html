@@ -37,17 +37,17 @@
     {% for record in records %}
     <div class="record">
       <span><strong>{{ record.date }}</strong></span>
-      {% for debit_variation in record.debit_variations %}
+      {% for debit_variation in record.variations_by_type.debit %}
       <div class="debit-variation">
-        <div class="account">{{ debit_variation.account }}</div>
+        <div class="account">{{ debit_variation.account.name }}</div>
         <div class="amount">{{ debit_variation.amount }}</div>
         <div class="clear"></div>
       </div>
       {% endfor %}
 
-      {% for credit_variation in record.credit_variations %}
+      {% for credit_variation in record.variations_by_type.credit %}
       <div class="credit-variation">
-        <div class="account">{{ credit_variation.account }}</div>
+        <div class="account">{{ credit_variation.account.name }}</div>
         <div class="amount">{{ credit_variation.amount }}</div>
         <div class="clear"></div>
       </div>

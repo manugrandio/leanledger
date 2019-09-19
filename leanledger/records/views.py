@@ -3,37 +3,11 @@ from collections import namedtuple
 
 from django.shortcuts import render
 
-from leanledger.records.models import Account
-
-
-Record = namedtuple('Record', 'account, amount')
+from leanledger.records.models import Account, Record
 
 
 def records_list(request):
-    context = {
-        'records': [
-            {
-                'date': '2019-09-10',
-                'debit_variations': [
-                    {'account': 'cash', 'amount': 100},
-                ],
-                'credit_variations': [
-                    {'account': 'expenses.book', 'amount': 20},
-                    {'account': 'expenses.videogame.mario', 'amount': 40},
-                    {'account': 'expenses.videogame.zelda', 'amount': 40},
-                ],
-            },
-            {
-                'date': '2019-09-08',
-                'debit_variations': [
-                    {'account': 'owed', 'amount': 200},
-                ],
-                'credit_variations': [
-                    {'account': 'cash', 'amount': 200},
-                ],
-            },
-        ],
-    }
+    context = {'records': Record.objects.all()}
     return render(request, 'records/records_list.html', context)
 
 

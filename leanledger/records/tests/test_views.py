@@ -1,32 +1,56 @@
 import json
 from collections import namedtuple
+from datetime import date
 
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.test import TestCase, LiveServerTestCase
 from django.urls import reverse
 from bs4 import BeautifulSoup
+from selenium import webdriver
 
 from leanledger.records.models import Account, Ledger, Variation, Record
 
 
-class TestRecordsView(TestCase):
+class TestRecordsView(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
-        print('setUp')
+        super().setUpClass()
+
+        cls.user = User.objects.create_user('Test')
+        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
+        cls.record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
+        cls.account_cash = Account.objects.create(
+            name='cash', type=Account.DESTINATION, ledger=cls.ledger)
+        cls.account_expense_one = Account.objects.create(
+            name='expense one', type=Account.ORIGIN, ledger=cls.ledger)
+        cls.account_expense_two = Account.objects.create(
+            name='expense two', type=Account.ORIGIN, ledger=cls.ledger)
+        cls.variation_cash = Variation.objects.create(
+            amount=-100, record=cls.record, account=cls.account_cash)
+        cls.variation_expense_one = Variation.objects.create(
+            amount=-40, record=cls.record, account=cls.account_expense_one)
+        cls.variation_expense_two = Variation.objects.create(
+            amount=-60, record=cls.record, account=cls.account_expense_two)
+
+        cls.browser = webdriver.Firefox()
 
     @classmethod
     def tearDownClass(cls):
-        print('tearDown')
+        cls.user.delete()
+        cls.browser.close()
+        super().tearDownClass()
 
     def test_records_page(self):
         url = reverse('records_list')
-        content = self.client.get(url).content
+        self.browser.get('{}{}'.format(self.live_server_url, url))
+        divs = self.browser.find_elements_by_tag_name('div')
+        debits_elements = self.browser.find_elements_by_class_name('debit-variation')
+        account_names = {
+            element.find_element_by_class_name('account').text
+            for element in debits_elements
+        }
 
-        soup = BeautifulSoup(content, 'html.parser')
-        rows = soup.find('table').find('tbody').find_all('tr')
-        total = sum(int(row.find_all('td')[-1].string) for row in rows)
-
-        self.assertEqual(total, 100)
+        self.assertEqual(account_names, {'expense one', 'expense two'})
 
 
 class TestAccountsView(TestCase):

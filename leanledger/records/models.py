@@ -33,10 +33,17 @@ class Account(models.Model):
     objects = AccountManager()
 
 
+class RecordManager(models.Manager):
+    def variations_by_type(self):
+        return [record.variations_by_type() for record in self.all()]
+
+
 class Record(models.Model):
     ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, related_name='records')
     date = models.DateField()
     # TODO on_delete=CASCASDE when Accounts are deleted
+
+    objects = RecordManager()
 
     def variations_by_type(self):
         get_type = lambda variation: variation.type
