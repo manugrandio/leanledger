@@ -1,11 +1,12 @@
 import json
 from collections import namedtuple
 
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 from bs4 import BeautifulSoup
 
-from leanledger.records.models import Account
+from leanledger.records.models import Account, Ledger, Variation, Record
 
 
 class TestRecordsView(TestCase):
@@ -31,17 +32,22 @@ class TestRecordsView(TestCase):
 class TestAccountsView(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.account_cash = Account.objects.create(name='cash', type=Account.DESTINATION)
+        cls.user = User.objects.create_user('Test')
+        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
+        cls.account_cash = Account.objects.create(
+            name='cash', type=Account.DESTINATION, ledger=cls.ledger)
         cls.account_wallet = Account.objects.create(
-            name='wallet', type=Account.DESTINATION, parent=cls.account_cash)
+            name='wallet', type=Account.DESTINATION, parent=cls.account_cash, ledger=cls.ledger)
         cls.account_bank_one = Account.objects.create(
-            name='bank one', type=Account.DESTINATION, parent=cls.account_wallet)
+            name='bank one', type=Account.DESTINATION,
+            parent=cls.account_wallet, ledger=cls.ledger)
         cls.account_bank_two = Account.objects.create(
-            name='bank two', type=Account.DESTINATION, parent=cls.account_wallet)
+            name='bank two', type=Account.DESTINATION,
+            parent=cls.account_wallet, ledger=cls.ledger)
 
     @classmethod
     def tearDownClass(cls):
-        Account.objects.all().delete()
+        cls.user.delete()
 
     def test_accounts_list(self):
         url = reverse('accounts_tree')
