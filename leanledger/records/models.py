@@ -41,6 +41,7 @@ class RecordManager(models.Manager):
 class Record(models.Model):
     ledger = models.ForeignKey(Ledger, on_delete=models.CASCADE, related_name='records')
     date = models.DateField()
+    description = models.CharField(max_length=128, blank=True)
     # TODO on_delete=CASCASDE when Accounts are deleted
 
     objects = RecordManager()
