@@ -1,0 +1,158 @@
+[
+    {
+        "model": "auth.User",
+        "pk": 1,
+        "fields": {
+            "username": "john",
+            "password": "1234",
+            "first_name": "John",
+            "last_name": "Doe"
+        }
+    },
+    {
+        "model": "records.ledger",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "name": "My Ledger"
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 1,
+        "fields": {
+            "name": "cash",
+            "ledger": 1,
+            "type": "D"
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 2,
+        "fields": {
+            "name": "bank",
+            "ledger": 1,
+            "type": "D",
+            "parent": 1
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 3,
+        "fields": {
+            "name": "wallet",
+            "ledger": 1,
+            "type": "D",
+            "parent": 1
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 4,
+        "fields": {
+            "name": "wealth",
+            "ledger": 1,
+            "type": "O"
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 5,
+        "fields": {
+            "name": "food",
+            "ledger": 1,
+            "parent": 4,
+            "type": "O"
+        }
+    },
+    {
+        "model": "records.record",
+        "pk": 1,
+        "fields": {
+            "date": "2019-08-01",
+            "ledger": 1
+        }
+    },
+    {
+        "model": "records.variation",
+        "pk": 1,
+        "fields": {
+            "record": 1,
+            "account": 3,
+            "amount": -100
+        }
+    },
+    {
+        "model": "records.variation",
+        "pk": 2,
+        "fields": {
+            "record": 1,
+            "account": 5,
+            "amount": -100
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 6,
+        "fields": {
+            "name": "lent",
+            "ledger": 1,
+            "type": "D"
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 7,
+        "fields": {
+            "name": "mary",
+            "ledger": 1,
+            "type": "D",
+            "parent": 6
+        }
+    },
+    {
+        "model": "records.account",
+        "pk": 8,
+        "fields": {
+            "name": "max",
+            "ledger": 1,
+            "type": "D",
+            "parent": 6
+        }
+    },
+    {
+        "model": "records.record",
+        "pk": 2,
+        "fields": {
+            "date": "2019-09-01",
+            "ledger": 1
+        }
+    },
+    {
+        "model": "records.variation",
+        "pk": 3,
+        "fields": {
+            "record": 2,
+            "account": 2,
+            "amount": -50
+        }
+    },
+    {
+        "model": "records.variation",
+        "pk": 4,
+        "fields": {
+            "record": 2,
+            "account": 7,
+            "amount": 30
+        }
+    },
+    {
+        "model": "records.variation",
+        "pk": 5,
+        "fields": {
+            "record": 2,
+            "account": 8,
+            "amount": 20
+        }
+    }
+]
