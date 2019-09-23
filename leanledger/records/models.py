@@ -32,6 +32,17 @@ class Account(models.Model):
 
     objects = AccountManager()
 
+    # TODO enforce uniqueness of: name + parent
+    # TODO enforce: children must be the same type as parent
+    # TODO enforce: accounts with children don't have own variations
+
+    @property
+    def total(self):
+        if self.children.exists():
+            return sum(child.total for child in self.children.all())
+        else:
+            return self.variations.total
+
 
 class RecordManager(models.Manager):
     def variations_by_type(self):
@@ -54,6 +65,12 @@ class Record(models.Model):
         return {type_: list(variations) for type_, variations in grouped}
 
 
+class VariationManager(models.Manager):
+    @property
+    def total(self):
+        return self.all().aggregate(models.Sum('amount'))['amount__sum']
+
+
 class Variation(models.Model):
     record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='variations')
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='variations')
@@ -61,6 +78,8 @@ class Variation(models.Model):
 
     CREDIT = 'credit'
     DEBIT = 'debit'
+
+    objects = VariationManager()
 
     @property
     def type(self):
