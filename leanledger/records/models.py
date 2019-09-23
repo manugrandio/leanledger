@@ -1,3 +1,4 @@
+from decimal import Decimal
 from itertools import groupby
 
 from django.db import models
@@ -41,7 +42,10 @@ class Account(models.Model):
         if self.children.exists():
             return sum(child.total for child in self.children.all())
         else:
-            return self.variations.total
+            return self.variations.total if self.variations.total is not None else Decimal('0')
+
+    def get_breadcrumbs(self):
+        return self.parent.get_breadcrumbs() + (self,) if self.parent else (self,)
 
 
 class RecordManager(models.Manager):

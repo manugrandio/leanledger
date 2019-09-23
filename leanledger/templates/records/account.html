@@ -1,0 +1,19 @@
+<div>
+{% for breadcrumb in account.get_breadcrumbs %}
+  {% if forloop.last %}
+    {{ breadcrumb.name }}
+  {% else %}
+    <a href="{% url 'account' breadcrumb.pk %}">{{ breadcrumb.name }}</a> /
+  {% endif %}
+{% endfor %}
+</div>
+
+<p><strong>Total: {{ account.total }}</strong></p>
+
+<h2>Records</h2>
+
+<ul>
+  {% for variation in account.variations.all %}
+    <li><a href="">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
+  {% endfor %}
+</ul>

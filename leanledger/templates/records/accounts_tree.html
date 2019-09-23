@@ -1,6 +1,6 @@
 <ul>
   {% for account in accounts %}
-  <li>{{ account.name }} <small>(Total: {{ account.total }})</small>
+  <li><a href="{% url 'account' account.pk %}">{{ account.name }}</a> <small>(Total: {{ account.total }})</small>
     {% if account.children.exists %}
       {% include 'records/accounts_tree.html' with accounts=account.children.all %}
     {% endif %}

@@ -7,57 +7,6 @@ from django.contrib.auth.models import User
 from leanledger.records.models import Account, Ledger, Record, Variation
 
 
-class TestLedger(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.user = User.objects.create_user('Test')
-        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.ledger.delete()
-        cls.user.delete()
-
-    def test_ledger(self):
-        ledger = Ledger.objects.all().get()
-
-        self.assertEqual(ledger.name, 'My Ledger')
-
-
-class TestAccount(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.user = User.objects.create_user('Test')
-        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
-        cash = Account.objects.create(name='cash', type=Account.DESTINATION, ledger=cls.ledger)
-        wealth = Account.objects.create(name='wealth', type=Account.ORIGIN, ledger=cls.ledger)
-        bank_one = Account.objects.create(
-            name='bank one', type=Account.DESTINATION, parent=cash, ledger=cls.ledger)
-        bank_two = Account.objects.create(
-            name='bank two', type=Account.ORIGIN, parent=cash, ledger=cls.ledger)
-        record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
-        Variation.objects.create(amount=80, record=record, account=bank_one)
-        Variation.objects.create(amount=80, record=record, account=bank_two)
-        Variation.objects.create(amount=160, record=record, account=wealth)
-
-    @classmethod
-    def tearDownClass(cls):
-        Account.objects.all().delete()
-        cls.user.delete()
-        cls.ledger.delete()
-
-    def test_query_accounts(self):
-        cash = Account.objects.get(name='cash')
-
-        children_names = {account.name for account in cash.children.all()}
-        self.assertEqual(children_names, {'bank one', 'bank two'})
-
-    def test_account_total(self):
-        cash = Account.objects.get(name='cash')
-
-        self.assertEqual(cash.total, 160)
-
-
 def set_up_class(test_case):
     test_case.user = User.objects.create_user('Test')
     test_case.ledger = Ledger.objects.create(user=test_case.user, name='My Ledger')
@@ -81,6 +30,59 @@ def tear_down_class(test_case):
     Ledger.objects.all().delete()
     Account.objects.all().delete()
     Record.objects.all().delete()
+
+
+class TestLedger(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user = User.objects.create_user('Test')
+        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.ledger.delete()
+        cls.user.delete()
+
+    def test_ledger(self):
+        ledger = Ledger.objects.all().get()
+
+        self.assertEqual(ledger.name, 'My Ledger')
+
+
+class TestAccount(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.user = User.objects.create_user('Test')
+        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
+        cls.cash = Account.objects.create(name='cash', type=Account.DESTINATION, ledger=cls.ledger)
+        wealth = Account.objects.create(name='wealth', type=Account.ORIGIN, ledger=cls.ledger)
+        bank_one = Account.objects.create(
+            name='bank one', type=Account.DESTINATION, parent=cls.cash, ledger=cls.ledger)
+        cls.bank_two = Account.objects.create(
+            name='bank two', type=Account.ORIGIN, parent=cls.cash, ledger=cls.ledger)
+        cls.bank_two_sub = Account.objects.create(
+            name='sub bank two', type=Account.ORIGIN, parent=cls.bank_two, ledger=cls.ledger)
+        record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
+        Variation.objects.create(amount=80, record=record, account=bank_one)
+        Variation.objects.create(amount=80, record=record, account=cls.bank_two_sub)
+        Variation.objects.create(amount=160, record=record, account=wealth)
+
+    tearDownClass = classmethod(tear_down_class)
+
+    def test_query_accounts(self):
+        cash = Account.objects.get(name='cash')
+
+        children_names = {account.name for account in cash.children.all()}
+        self.assertEqual(children_names, {'bank one', 'bank two'})
+
+    def test_account_total(self):
+        cash = Account.objects.get(name='cash')
+
+        self.assertEqual(cash.total, Decimal('160'))
+
+    def test_breadcrumbs(self):
+        breadcrumbs = (self.cash, self.bank_two, self.bank_two_sub)
+        self.assertEqual(self.bank_two_sub.get_breadcrumbs(), breadcrumbs)
 
 
 class TestRecord(TestCase):
