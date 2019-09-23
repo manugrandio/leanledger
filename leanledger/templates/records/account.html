@@ -1,3 +1,6 @@
+{% extends "records/base.html" %}
+
+{% block content %}
 <div>
 {% for breadcrumb in account.get_breadcrumbs %}
   {% if forloop.last %}
@@ -10,10 +13,21 @@
 
 <p><strong>Total: {{ account.total }}</strong></p>
 
-<h2>Records</h2>
+{% if account.children.all.exists %}
+  <h2>Children accounts</h2>
+  {% include 'records/accounts_tree.html' with accounts=account.children.all %}
+{% endif %}
 
-<ul>
-  {% for variation in account.variations.all %}
-    <li><a href="">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
-  {% endfor %}
-</ul>
+{% if account.variations.all %}
+  <h2>Records</h2>
+
+  <ul>
+    {% for variation in account.variations.all %}
+      <li><a href="{% url "record" variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>There are no records in this account.</p>
+{% endif %}
+
+{% endblock %}

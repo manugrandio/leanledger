@@ -1,64 +1,11 @@
-<html>
-<head>
-  <title>Records</title>
-  <style>
-  .records {
-    max-width: 400px;
-    margin: 0 auto;
-  }
+{% extends "records/base.html" %}
 
-  .record {
-    margin-top: 2em;
-  }
+{% block content %}
 
-  .debit-variation {
-    padding-right: 30px;
-  }
+<div class="records">
+  {% for record in records %}
+    {% include "records/record_single.html" with record=record %}
+  {% endfor %}
+</div>
 
-  .credit-variation {
-    padding-left: 30px;
-  }
-
-  .account {
-    float: left;
-  }
-
-  .amount {
-    float: right;
-  }
-
-  .clear {
-    clear: both;
-  }
-  </style>
-</head>
-<body>
-  {% load record_utils %}
-  <div class="records">
-    {% for record in records %}
-    <div class="record">
-      <span><strong>{{ record.date }}</strong></span>
-      {% for debit_variation in record.variations_by_type.debit %}
-      <div class="debit-variation">
-        <div class="account">
-          <a href="{% url 'account' debit_variation.account.pk %}">{{ debit_variation.account.name }}</a>
-        </div>
-        <div class="amount">{{ debit_variation.amount|absolute }}</div>
-        <div class="clear"></div>
-      </div>
-      {% endfor %}
-
-      {% for credit_variation in record.variations_by_type.credit %}
-      <div class="credit-variation">
-        <div class="account">
-          <a href="{% url 'account' credit_variation.account.pk %}">{{ credit_variation.account.name }}</a>
-        </div>
-        <div class="amount">{{ credit_variation.amount|absolute }}</div>
-        <div class="clear"></div>
-      </div>
-      {% endfor %}
-    </div>
-    {% endfor %}
-  </div>
-</body>
-</html>
+{% endblock %}

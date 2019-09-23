@@ -6,6 +6,11 @@ from django.shortcuts import render
 from leanledger.records.models import Account, Record
 
 
+def record(request, pk):
+    record = Record.objects.get(pk=pk)  # TODO replace for get_or_404
+    return render(request, 'records/record.html', {'record': record})
+
+
 def records_list(request):
     context = {'records': Record.objects.all()}
     return render(request, 'records/records_list.html', context)
