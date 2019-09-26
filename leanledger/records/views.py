@@ -3,7 +3,12 @@ from collections import namedtuple
 
 from django.shortcuts import render
 
-from leanledger.records.models import Account, Record
+from leanledger.records.models import Ledger, Account, Record
+
+
+def ledgers_list(request):
+    ledgers = Ledger.objects.all()  # TODO get just the user's ledgers
+    return render(request, 'records/ledger_list.html', {'ledgers': ledgers})
 
 
 def record(request, pk):
@@ -11,7 +16,7 @@ def record(request, pk):
     return render(request, 'records/record.html', {'record': record})
 
 
-def records_list(request):
+def records_list(request, ledger_pk):
     context = {'records': Record.objects.all()}
     return render(request, 'records/records_list.html', context)
 

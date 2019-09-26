@@ -35,8 +35,10 @@ def tear_down_class(test_case):
 class TestLedger(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.user = User.objects.create_user('Test')
-        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
+        set_up_class(cls)
+        cls.ledger_two = Ledger.objects.create(user=cls.user, name='My Second Ledger')
+        cls.record_two = Record.objects.create(
+            date=date(2019, 10, 1), ledger=cls.ledger_two, description='My second record')
 
     @classmethod
     def tearDownClass(cls):
@@ -44,9 +46,16 @@ class TestLedger(TestCase):
         cls.user.delete()
 
     def test_ledger(self):
-        ledger = Ledger.objects.all().get()
+        ledger = Ledger.objects.all().get(name='My Ledger')
 
         self.assertEqual(ledger.name, 'My Ledger')
+
+    def test_ledger_get_records(self):
+        ledger = Ledger.objects.get(name='My Second Ledger')
+
+        records = ledger.records.all()
+
+        self.assertEqual([record.description for record in records], ['My second record'])
 
 
 class TestAccount(TestCase):
