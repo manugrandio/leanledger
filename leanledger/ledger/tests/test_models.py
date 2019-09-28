@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.test import TestCase
 from django.contrib.auth.models import User
 
-from leanledger.records.models import Account, Ledger, Record, Variation
+from ..models import Account, Ledger, Record, Variation
 
 
 def set_up_class(test_case):

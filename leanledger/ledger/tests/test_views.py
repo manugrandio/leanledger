@@ -8,7 +8,7 @@ from django.urls import reverse
 from bs4 import BeautifulSoup
 from selenium import webdriver
 
-from leanledger.records.models import Account, Ledger, Variation, Record
+from ..models import Account, Ledger, Variation, Record
 
 
 class TestRecordsView(LiveServerTestCase):

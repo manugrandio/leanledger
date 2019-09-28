@@ -3,7 +3,7 @@ from collections import namedtuple
 
 from django.shortcuts import render
 
-from leanledger.records.models import Ledger, Account, Record
+from .models import Ledger, Account, Record
 
 
 def ledgers(request):

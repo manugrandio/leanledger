@@ -10,7 +10,7 @@
         }
     },
     {
-        "model": "records.ledger",
+        "model": "ledger.ledger",
         "pk": 1,
         "fields": {
             "user": 1,
@@ -18,7 +18,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 1,
         "fields": {
             "name": "cash",
@@ -27,7 +27,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 2,
         "fields": {
             "name": "bank",
@@ -37,7 +37,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 3,
         "fields": {
             "name": "wallet",
@@ -47,7 +47,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 4,
         "fields": {
             "name": "wealth",
@@ -56,7 +56,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 5,
         "fields": {
             "name": "food",
@@ -66,7 +66,7 @@
         }
     },
     {
-        "model": "records.record",
+        "model": "ledger.record",
         "pk": 1,
         "fields": {
             "date": "2019-08-01",
@@ -74,7 +74,7 @@
         }
     },
     {
-        "model": "records.variation",
+        "model": "ledger.variation",
         "pk": 1,
         "fields": {
             "record": 1,
@@ -83,7 +83,7 @@
         }
     },
     {
-        "model": "records.variation",
+        "model": "ledger.variation",
         "pk": 2,
         "fields": {
             "record": 1,
@@ -92,7 +92,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 6,
         "fields": {
             "name": "lent",
@@ -101,7 +101,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 7,
         "fields": {
             "name": "mary",
@@ -111,7 +111,7 @@
         }
     },
     {
-        "model": "records.account",
+        "model": "ledger.account",
         "pk": 8,
         "fields": {
             "name": "max",
@@ -121,7 +121,7 @@
         }
     },
     {
-        "model": "records.record",
+        "model": "ledger.record",
         "pk": 2,
         "fields": {
             "date": "2019-09-01",
@@ -129,7 +129,7 @@
         }
     },
     {
-        "model": "records.variation",
+        "model": "ledger.variation",
         "pk": 3,
         "fields": {
             "record": 2,
@@ -138,7 +138,7 @@
         }
     },
     {
-        "model": "records.variation",
+        "model": "ledger.variation",
         "pk": 4,
         "fields": {
             "record": 2,
@@ -147,7 +147,7 @@
         }
     },
     {
-        "model": "records.variation",
+        "model": "ledger.variation",
         "pk": 5,
         "fields": {
             "record": 2,
