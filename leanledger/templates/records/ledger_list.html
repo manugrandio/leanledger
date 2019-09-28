@@ -1,5 +1,5 @@
 <ul>
 {% for ledger in ledgers %}
-  <li><a href="{% url 'records_list' ledger.pk %}">{{ ledger.name }}</a></li>
+  <li><a href="{% url 'records' ledger.pk %}">{{ ledger.name }}</a></li>
 {% endfor %}
 </ul>

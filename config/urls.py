@@ -1,12 +1,12 @@
 from django.urls import path
 
-from leanledger.records.views import ledgers_list, record, records_list, account, accounts_tree
+from leanledger.records.views import ledgers, record, records, account, accounts
 
 # TODO move to records app
 urlpatterns = [
-    path('ledger/', ledgers_list, name='ledgers_list'),
-    path('ledger/<int:ledger_pk>/', records_list, name='records_list'),
-    path('record/<int:pk>/', record, name='record'),
-    path('account/<int:pk>/', account, name='account'),
-    path('accounts/', accounts_tree, name='accounts_tree'),
+    path('ledger/', ledgers, name='ledgers'),
+    path('ledger/<int:ledger_pk>/record/', records, name='records'),
+    path('ledger/<int:ledger_pk>/record/<int:record_pk>/', record, name='record'),
+    path('ledger/<int:ledger_pk>/account/', accounts, name='accounts'),
+    path('ledger/<int:ledger_pk>/account/<int:account_pk>/', account, name='account'),
 ]

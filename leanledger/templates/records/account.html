@@ -6,7 +6,7 @@
   {% if forloop.last %}
     {{ breadcrumb.name }}
   {% else %}
-    <a href="{% url 'account' breadcrumb.pk %}">{{ breadcrumb.name }}</a> /
+    <a href="{% url 'account' ledger_pk breadcrumb.pk %}">{{ breadcrumb.name }}</a> /
   {% endif %}
 {% endfor %}
 </div>
@@ -23,7 +23,7 @@
 
   <ul>
     {% for variation in account.variations.all %}
-      <li><a href="{% url "record" variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
+      <li><a href="{% url "record" ledger_pk variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
     {% endfor %}
   </ul>
 {% else %}
