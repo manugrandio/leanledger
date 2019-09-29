@@ -1,0 +1,10 @@
+{% extends 'ledger/base.html' %}
+
+{% block content %}
+<form method="POST" action="{% url 'ledger_delete' ledger.pk %}">
+  <p>Are you sure you want to delete ledger “{{ ledger.name }}”</p>
+  <input type="hidden" name="confirm" value="true"/>
+  {% csrf_token %}
+  <button type="submit">Yes</button>
+</form>
+{% endblock %}

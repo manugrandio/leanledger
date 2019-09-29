@@ -3,7 +3,13 @@
 {% block content %}
 <ul>
 {% for ledger in ledgers %}
-  <li><a href="{% url 'records' ledger.pk %}">{{ ledger.name }}</a></li>
+  <li>
+    <a href="{% url 'records' ledger.pk %}">{{ ledger.name }}</a>
+    <form action="{% url 'ledger_delete' ledger.pk %}" method="POST">
+      {% csrf_token %}
+      <button type="submit">Delete</button>
+    </form>
+  </li>
 {% endfor %}
 </ul>
 

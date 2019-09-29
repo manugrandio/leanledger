@@ -30,6 +30,15 @@ def ledger_new(request):
     return render(request, 'ledger/ledger_new.html', {'form': form})
 
 
+def ledger_delete(request, ledger_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    if request.POST.get('confirm'):
+        ledger.delete()
+        return redirect(reverse('ledgers'))
+    else:
+        return render(request, 'ledger/ledger_delete_confirmation.html', {'ledger': ledger})
+
+
 def record(request, ledger_pk, record_pk):
     record = Record.objects.get(pk=record_pk)  # TODO replace for get_or_404
     return render(request, 'ledger/record.html', {'record': record, 'ledger_pk': ledger_pk})

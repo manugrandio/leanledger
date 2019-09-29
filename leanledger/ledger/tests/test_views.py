@@ -22,6 +22,12 @@ class TestLedgerViews(TestCase):
         User.objects.all().delete()
         Ledger.objects.all().delete()
 
+    def setUp(self):
+        self.ledger_two = Ledger.objects.create(name='Ledger Two', user=self.user)
+
+    def tearDown(self):
+        self.ledger_two.delete()
+
     def test_get_new(self):
         response = self.client.get('/ledger/new/')
 
@@ -34,6 +40,22 @@ class TestLedgerViews(TestCase):
         response = self.client.post(reverse('ledger_new'), data=data, follow=True)
 
         self.assertIn(self.ledger_name, response.content.decode())
+
+    def test_delete_withouth_confirm_does_not_delete(self):
+        self.client.login(username='joe', password='pass')
+        url = reverse('ledger_delete', args=[self.ledger_two.pk])
+
+        response = self.client.post(url)
+
+        self.assertTrue(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
+
+    def test_delete_with_confirm_does_delete(self):
+        self.client.login(username='joe', password='pass')
+        url = reverse('ledger_delete', args=[self.ledger_two.pk])
+
+        response = self.client.post(url, data={'confirm': 'true'})
+
+        self.assertFalse(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
 
 class TestRecordsView(LiveServerTestCase):
