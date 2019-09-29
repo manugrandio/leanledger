@@ -15,7 +15,7 @@ class TestLedgerViews(TestCase):
     def test_get_new(self):
         response = self.client.get('/ledger/new/')
 
-        self.assertTemplateUsed(response, 'records/ledger_new.html')
+        self.assertTemplateUsed(response, 'ledger/ledger_new.html')
 
 
 class TestRecordsView(LiveServerTestCase):

@@ -2,7 +2,7 @@
   {% for account in accounts %}
   <li><a href="{% url 'account' ledger_pk account.pk %}">{{ account.name }}</a> <small>(Total: {{ account.total }})</small>
     {% if account.children.exists %}
-      {% include 'records/accounts_tree.html' with accounts=account.children.all %}
+      {% include 'ledger/accounts_tree.html' with accounts=account.children.all %}
     {% endif %}
   </li>
   {% endfor %}

@@ -1,10 +1,10 @@
-{% extends "records/base.html" %}
+{% extends "ledger/base.html" %}
 
 {% block content %}
 
 <div class="records">
   {% for record in records %}
-    {% include "records/record_single.html" with record=record %}
+    {% include "ledger/record_single.html" with record=record %}
   {% endfor %}
 </div>
 

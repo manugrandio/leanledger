@@ -1,4 +1,4 @@
-{% extends "records/base.html" %}
+{% extends "ledger/base.html" %}
 
 {% block content %}
 <div>
@@ -15,7 +15,7 @@
 
 {% if account.children.all.exists %}
   <h2>Children accounts</h2>
-  {% include 'records/accounts_tree.html' with accounts=account.children.all %}
+  {% include 'ledger/accounts_tree.html' with accounts=account.children.all %}
 {% endif %}
 
 {% if account.variations.all %}
