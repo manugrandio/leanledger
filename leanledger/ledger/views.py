@@ -1,8 +1,10 @@
 import json
 from collections import namedtuple
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.urls import reverse
 
+from .forms import LedgerForm
 from .models import Ledger, Account, Record
 
 
@@ -12,10 +14,17 @@ def ledgers(request):
 
 
 def ledger_new(request):
-    if request.POST:
-        return render(request, 'ledger/ledger_created.html', {'name': request.POST['name']})
+    if request.method == 'POST':
+        form = LedgerForm(request.POST)
+        if form.is_valid():
+            ledger = form.save(commit=False)
+            ledger.user = request.user
+            ledger.save()
+            return redirect(reverse('ledgers'))
+        return render(request, 'ledger/ledger_new.html', {'form': form})
     else:
-        return render(request, 'ledger/ledger_new.html')
+        form = LedgerForm()
+    return render(request, 'ledger/ledger_new.html', {'form': form})
 
 
 def record(request, ledger_pk, record_pk):

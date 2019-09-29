@@ -12,15 +12,28 @@ from ..models import Account, Ledger, Variation, Record
 
 
 class TestLedgerViews(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.ledger_name = 'Other Ledger'
+        cls.user = User.objects.create_user(username='joe', password='pass')
+
+    @classmethod
+    def tearDownClass(cls):
+        User.objects.all().delete()
+        Ledger.objects.all().delete()
+
     def test_get_new(self):
         response = self.client.get('/ledger/new/')
 
         self.assertTemplateUsed(response, 'ledger/ledger_new.html')
 
     def test_post_new(self):
-        response = self.client.post('/ledger/new/', data={'name': 'My Ledger'})
+        self.client.login(username='joe', password='pass')
+        data = {'name': self.ledger_name}
 
-        self.assertIn('My Ledger', response.content.decode())
+        response = self.client.post(reverse('ledger_new'), data=data, follow=True)
+
+        self.assertIn(self.ledger_name, response.content.decode())
 
 
 class TestRecordsView(LiveServerTestCase):
