@@ -1,5 +1,11 @@
+{% extends 'ledger/base.html' %}
+
+{% block content %}
 <ul>
 {% for ledger in ledgers %}
   <li><a href="{% url 'records' ledger.pk %}">{{ ledger.name }}</a></li>
 {% endfor %}
 </ul>
+
+<a href="{% url 'ledger_new' %}">New</a>
+{% endblock %}
