@@ -18,6 +18,7 @@ def ledger_new(request):
     def get_user():  # TODO replace for just `request.user` when auth is set up
         return User.objects.first() if isinstance(request.user, AnonymousUser) else request.user
 
+    form = LedgerForm(request.POST or None)
     if request.method == 'POST':
         form = LedgerForm(request.POST)
         if form.is_valid():
@@ -26,8 +27,6 @@ def ledger_new(request):
             ledger.save()
             return redirect(reverse('ledgers'))
         return render(request, 'ledger/ledger_new.html', {'form': form})
-    else:
-        form = LedgerForm()
     return render(request, 'ledger/ledger_new.html', {'form': form})
 
 
