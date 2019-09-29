@@ -54,9 +54,9 @@ def account(request, ledger_pk, account_pk):
     return render(request, 'ledger/account.html', {'account': account, 'ledger_pk': ledger_pk})
 
 
-def accounts(request):
-    destination_accounts = Account.objects.destination_accounts()
-    origin_accounts = Account.objects.origin_accounts()
+def accounts(request, ledger_pk):
+    destination_accounts = Account.objects.destination_accounts(ledger_pk)
+    origin_accounts = Account.objects.origin_accounts(ledger_pk)
     return render(request, 'ledger/accounts_list.html', {
         'destination_accounts': destination_accounts,
         'origin_accounts': origin_accounts,

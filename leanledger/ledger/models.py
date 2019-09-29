@@ -11,11 +11,11 @@ class Ledger(models.Model):
 
 
 class AccountManager(models.Manager):
-    def destination_accounts(self):
-        return self.filter(parent=None, type=Account.DESTINATION)
+    def destination_accounts(self, ledger_pk):
+        return self.filter(parent=None, type=Account.DESTINATION, ledger=ledger_pk)
 
-    def origin_accounts(self):
-        return self.filter(parent=None, type=Account.ORIGIN)
+    def origin_accounts(self, ledger_pk):
+        return self.filter(parent=None, type=Account.ORIGIN, ledger=ledger_pk)
 
 
 class Account(models.Model):
