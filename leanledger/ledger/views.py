@@ -32,7 +32,7 @@ def ledger_new(request):
 
 def ledger_delete(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
-    if request.POST.get('confirm'):
+    if request.method == 'POST':
         ledger.delete()
         return redirect(reverse('ledgers'))
     else:

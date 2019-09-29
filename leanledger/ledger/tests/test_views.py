@@ -41,11 +41,11 @@ class TestLedgerViews(TestCase):
 
         self.assertIn(self.ledger_name, response.content.decode())
 
-    def test_delete_withouth_confirm_does_not_delete(self):
+    def test_delete_with_get_does_not_delete(self):
         self.client.login(username='joe', password='pass')
         url = reverse('ledger_delete', args=[self.ledger_two.pk])
 
-        response = self.client.post(url)
+        response = self.client.get(url)
 
         self.assertTrue(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
@@ -53,7 +53,7 @@ class TestLedgerViews(TestCase):
         self.client.login(username='joe', password='pass')
         url = reverse('ledger_delete', args=[self.ledger_two.pk])
 
-        response = self.client.post(url, data={'confirm': 'true'})
+        response = self.client.post(url)
 
         self.assertFalse(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
