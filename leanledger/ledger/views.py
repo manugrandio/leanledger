@@ -1,6 +1,7 @@
 import json
 from collections import namedtuple
 
+from django.contrib.auth.models import AnonymousUser, User
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -14,11 +15,14 @@ def ledgers(request):
 
 
 def ledger_new(request):
+    def get_user():  # TODO replace for just `request.user` when auth is set up
+        return User.objects.first() if isinstance(request.user, AnonymousUser) else request.user
+
     if request.method == 'POST':
         form = LedgerForm(request.POST)
         if form.is_valid():
             ledger = form.save(commit=False)
-            ledger.user = request.user
+            ledger.user = get_user()
             ledger.save()
             return redirect(reverse('ledgers'))
         return render(request, 'ledger/ledger_new.html', {'form': form})
