@@ -17,6 +17,11 @@ class TestLedgerViews(TestCase):
 
         self.assertTemplateUsed(response, 'ledger/ledger_new.html')
 
+    def test_post_new(self):
+        response = self.client.post('/ledger/new/', data={'name': 'My Ledger'})
+
+        self.assertIn('My Ledger', response.content.decode())
+
 
 class TestRecordsView(LiveServerTestCase):
     @classmethod

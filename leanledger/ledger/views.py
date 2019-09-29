@@ -12,7 +12,10 @@ def ledgers(request):
 
 
 def ledger_new(request):
-    return render(request, 'ledger/ledger_new.html')
+    if request.POST:
+        return render(request, 'ledger/ledger_created.html', {'name': request.POST['name']})
+    else:
+        return render(request, 'ledger/ledger_new.html')
 
 
 def record(request, ledger_pk, record_pk):
