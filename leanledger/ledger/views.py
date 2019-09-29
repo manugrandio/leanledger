@@ -11,6 +11,10 @@ def ledgers(request):
     return render(request, 'records/ledger_list.html', {'ledgers': ledgers})
 
 
+def ledger_new(request):
+    return render(request, 'records/ledger_new.html')
+
+
 def record(request, ledger_pk, record_pk):
     record = Record.objects.get(pk=record_pk)  # TODO replace for get_or_404
     return render(request, 'records/record.html', {'record': record, 'ledger_pk': ledger_pk})

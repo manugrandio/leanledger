@@ -11,6 +11,13 @@ from selenium import webdriver
 from ..models import Account, Ledger, Variation, Record
 
 
+class TestLedgerViews(TestCase):
+    def test_get_new(self):
+        response = self.client.get('/ledger/new/')
+
+        self.assertTemplateUsed(response, 'records/ledger_new.html')
+
+
 class TestRecordsView(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
