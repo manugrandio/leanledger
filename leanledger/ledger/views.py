@@ -26,8 +26,22 @@ def ledger_new(request):
             ledger.user = get_user()
             ledger.save()
             return redirect(reverse('ledgers'))
+        # TODO handle errors (and also in template)
         return render(request, 'ledger/ledger_new.html', {'form': form})
     return render(request, 'ledger/ledger_new.html', {'form': form})
+
+
+def ledger_update(request, ledger_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    if request.method == 'POST':
+        form = LedgerForm(request.POST, instance=ledger)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('ledgers'))
+        # TODO handle errors (and also in template)
+    else:
+        form = LedgerForm(instance=ledger)
+    return render(request, 'ledger/ledger_update.html', {'form': form})
 
 
 def ledger_delete(request, ledger_pk):

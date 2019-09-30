@@ -41,6 +41,25 @@ class TestLedgerViews(TestCase):
 
         self.assertIn(self.ledger_name, response.content.decode())
 
+    def test_update_with_get_does_not_update(self):
+        self.client.login(username='joe', password='pass')
+        new_name = 'New Ledger Name'
+
+        response = self.client.get(reverse('ledger_update', args=[self.ledger_two.pk]))
+
+        ledger = Ledger.objects.get(pk=self.ledger_two.pk)
+        self.assertNotEqual(ledger.name, new_name)
+
+    def test_update_with_post_does_update(self):
+        self.client.login(username='joe', password='pass')
+        url = reverse('ledger_update', args=[self.ledger_two.pk])
+        new_name = 'New Ledger Name'
+
+        response = self.client.post(url, data={'name': new_name})
+
+        ledger = Ledger.objects.get(pk=self.ledger_two.pk)
+        self.assertEqual(ledger.name, new_name)
+
     def test_delete_with_get_does_not_delete(self):
         self.client.login(username='joe', password='pass')
         url = reverse('ledger_delete', args=[self.ledger_two.pk])
