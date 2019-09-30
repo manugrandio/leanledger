@@ -119,10 +119,10 @@ class TestRecordsView(LiveServerTestCase):
         self.assertEqual(account_names, {'expense one', 'expense two'})
 
 
-class TestAccountsView(TestCase):
+class TestAccountViews(TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.user = User.objects.create_user('Test')
+        cls.user = User.objects.create_user(username='joe', password='pass')
         cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
         cls.account_cash = Account.objects.create(
             name='cash', type=Account.DESTINATION, ledger=cls.ledger)
@@ -140,11 +140,26 @@ class TestAccountsView(TestCase):
         cls.user.delete()
 
     def test_accounts_list(self):
-        url = reverse('accounts_tree')
-        content = self.client.post(url, content_type='application/json').content
+        url = reverse('accounts', args=[self.ledger.pk])
 
-        soup = BeautifulSoup(content, 'html.parser')
-        bank = soup.find('ul').find('li').find('ul').find('li')
-        bank_one = bank.find('ul').find('li').string
+        response = self.client.get(url, content_type='application/json')
 
-        self.assertEqual(bank_one.strip(), 'bank one')
+        self.assertTemplateUsed(response, 'ledger/accounts_list.html')
+
+    def test_account_get_create(self):
+        response = self.client.get(reverse('account_create', args=[self.ledger.pk]))
+
+        self.assertTemplateUsed(response, 'ledger/account_create.html')
+
+    def test_account_post_create(self):
+        account_name = 'bank three'
+        data = {
+            'name': account_name,
+            'type': Account.DESTINATION,
+            'parent': self.account_cash.pk,
+        }
+
+        response = self.client.post(reverse('account_create', args=[self.ledger.pk]), data=data)
+
+        exists = Account.objects.filter(name=account_name).exists()
+        self.assertTrue(exists)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import LedgerForm
+from .forms import AccountForm, LedgerForm
 from .models import Ledger, Account, Record
 
 
@@ -75,3 +75,15 @@ def accounts(request, ledger_pk):
         'destination_accounts': destination_accounts,
         'origin_accounts': origin_accounts,
     })
+
+
+def account_create(request, ledger_pk):
+    form = AccountForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            account = form.save(commit=False)
+            account.ledger = Ledger.objects.get(pk=ledger_pk)
+            account.save()
+            return redirect(reverse('accounts', args=[account.ledger.pk]))
+        # TODO handle form errors
+    return render(request, 'ledger/account_create.html', {'form': form})

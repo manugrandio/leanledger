@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views import (
-    ledgers, ledger_new, ledger_update, ledger_delete, record, records, account, accounts
+    ledgers, ledger_new, ledger_update, ledger_delete, record, records, account,
+    account_create, accounts
 )
 
 
@@ -13,5 +14,6 @@ urlpatterns = [
     path('<int:ledger_pk>/record/', records, name='records'),
     path('<int:ledger_pk>/record/<int:record_pk>/', record, name='record'),
     path('<int:ledger_pk>/account/', accounts, name='accounts'),
+    path('<int:ledger_pk>/account/create/', account_create, name='account_create'),
     path('<int:ledger_pk>/account/<int:account_pk>/', account, name='account'),
 ]
