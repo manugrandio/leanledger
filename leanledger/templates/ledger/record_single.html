@@ -1,11 +1,11 @@
 {% load record_utils %}
 
 <div class="record">
-  <span><strong>{{ record.date }}</strong></span>
+  <span><strong>{{ record.date }}</strong> (<a href="{% url 'record' ledger.pk record.pk %}">link</a>)</span>
   {% for debit_variation in record.variations_by_type.debit %}
   <div class="debit-variation">
     <div class="account">
-      <a href="{% url 'account' ledger_pk debit_variation.account.pk %}">{{ debit_variation.account.name }}</a>
+      <a href="{% url 'account' ledger.pk debit_variation.account.pk %}">{{ debit_variation.account.name }}</a>
     </div>
     <div class="amount">{{ debit_variation.amount|absolute }}</div>
     <div class="clear"></div>
@@ -15,7 +15,7 @@
   {% for credit_variation in record.variations_by_type.credit %}
   <div class="credit-variation">
     <div class="account">
-      <a href="{% url 'account' ledger_pk credit_variation.account.pk %}">{{ credit_variation.account.name }}</a>
+      <a href="{% url 'account' ledger.pk credit_variation.account.pk %}">{{ credit_variation.account.name }}</a>
     </div>
     <div class="amount">{{ credit_variation.amount|absolute }}</div>
     <div class="clear"></div>

@@ -47,6 +47,9 @@ class Account(models.Model):
     def get_breadcrumbs(self):
         return self.parent.get_breadcrumbs() + (self,) if self.parent else (self,)
 
+    def __str__(self):
+        return '{}: {} ({})'.format(self.type, self.name, self.total)
+
 
 class RecordManager(models.Manager):
     def variations_by_type(self):

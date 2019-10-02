@@ -1,9 +1,24 @@
 {% extends 'ledger/base.html' %}
 
 {% block content %}
-<form method="POST">
-  {{ form }}
-  {% csrf_token %}
-  <button type="submit">Create</button>
-</form>
+
+{% include "ledger/nav.html" %}
+
+<div class="container">
+  <div class="row justify-content-center mt-3">
+    <div class="col-6">
+      <form method="POST">
+      {% for field in form %}
+        <div class="form-group">
+          {{ field.label_tag }}
+          {{ field }}
+        </div>
+      {% endfor %}
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit">Create</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

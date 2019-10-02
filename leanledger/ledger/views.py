@@ -54,31 +54,38 @@ def ledger_delete(request, ledger_pk):
 
 
 def record(request, ledger_pk, record_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
     record = Record.objects.get(pk=record_pk)  # TODO replace for get_or_404
-    return render(request, 'ledger/record.html', {'record': record, 'ledger_pk': ledger_pk})
+    return render(request, 'ledger/record.html', {'record': record, 'ledger': ledger})
 
 
 def records(request, ledger_pk):
-    context = {'records': Record.objects.all(), 'ledger_pk': ledger_pk}
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    context = {'records': Record.objects.all(), 'ledger': ledger}
     return render(request, 'ledger/records_list.html', context)
 
 
 def account(request, ledger_pk, account_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
     account = Account.objects.get(pk=account_pk)  # TODO replace for get_or_404
-    return render(request, 'ledger/account.html', {'account': account, 'ledger_pk': ledger_pk})
+    return render(request, 'ledger/account.html', {'account': account, 'ledger': ledger})
 
 
 def accounts(request, ledger_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
     destination_accounts = Account.objects.destination_accounts(ledger_pk)
     origin_accounts = Account.objects.origin_accounts(ledger_pk)
     return render(request, 'ledger/accounts_list.html', {
         'destination_accounts': destination_accounts,
         'origin_accounts': origin_accounts,
+        'ledger': ledger,
     })
 
 
 def account_create(request, ledger_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
     form = AccountForm(request.POST or None)
+    # TODO if `parent` is in GET args, use it as default
     if request.method == 'POST':
         if form.is_valid():
             account = form.save(commit=False)
@@ -86,4 +93,4 @@ def account_create(request, ledger_pk):
             account.save()
             return redirect(reverse('accounts', args=[account.ledger.pk]))
         # TODO handle form errors
-    return render(request, 'ledger/account_create.html', {'form': form})
+    return render(request, 'ledger/account_create.html', {'form': form, 'ledger': ledger})

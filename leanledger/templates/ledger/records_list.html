@@ -2,10 +2,16 @@
 
 {% block content %}
 
-<div class="records">
-  {% for record in records %}
-    {% include "ledger/record_single.html" with record=record %}
-  {% endfor %}
+{% include "ledger/nav.html" with active="records" %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-4">
+      {% for record in records %}
+        {% include "ledger/record_single.html" with record=record %}
+      {% endfor %}
+    </div>
+  </div>
 </div>
 
 {% endblock %}

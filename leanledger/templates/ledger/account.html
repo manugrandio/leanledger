@@ -1,33 +1,50 @@
 {% extends "ledger/base.html" %}
 
 {% block content %}
-<div>
-{% for breadcrumb in account.get_breadcrumbs %}
-  {% if forloop.last %}
-    {{ breadcrumb.name }}
-  {% else %}
-    <a href="{% url 'account' ledger_pk breadcrumb.pk %}">{{ breadcrumb.name }}</a> /
-  {% endif %}
-{% endfor %}
+
+{% include "ledger/nav.html" with active="accounts" %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-6">
+      <nav class="mt-3">
+        <ol class="breadcrumb">
+        {% for breadcrumb in account.get_breadcrumbs %}
+          {% if forloop.last %}
+            <li class="breadcrumb-item active">{{ breadcrumb.name }}</li>
+          {% else %}
+            <li class="breadcrumb-item">
+              <a href="{% url 'account' ledger.pk breadcrumb.pk %}">{{ breadcrumb.name }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        </ol>
+      </nav>
+
+      <p><strong>Total: {{ account.total }}</strong></p>
+
+      {% if account.children.all.exists %}
+        <h2>Children accounts</h2>
+        {% include 'ledger/accounts_tree.html' with accounts=account.children.all %}
+      {% endif %}
+
+      {% if account.variations.all %}
+        <h2>Records</h2>
+
+        <ul>
+          {% for variation in account.variations.all %}
+            <li><a href="{% url "record" ledger.pk variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>There are no records in this account.</p>
+      {% endif %}
+
+      <a href="{% url 'account_create' account.ledger.pk %}?parent={{ account.pk }}" class="btn btn-primary">
+        New child account
+      </a>
+    </div>
+  </div>
 </div>
-
-<p><strong>Total: {{ account.total }}</strong></p>
-
-{% if account.children.all.exists %}
-  <h2>Children accounts</h2>
-  {% include 'ledger/accounts_tree.html' with accounts=account.children.all %}
-{% endif %}
-
-{% if account.variations.all %}
-  <h2>Records</h2>
-
-  <ul>
-    {% for variation in account.variations.all %}
-      <li><a href="{% url "record" ledger_pk variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>There are no records in this account.</p>
-{% endif %}
 
 {% endblock %}
