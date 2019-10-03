@@ -93,6 +93,9 @@ class TestAccount(TestCase):
         breadcrumbs = (self.cash, self.bank_two, self.bank_two_sub)
         self.assertEqual(self.bank_two_sub.get_breadcrumbs(), breadcrumbs)
 
+    def test_full_name(self):
+        self.assertEqual(self.bank_two_sub.full_name, 'cash / bank two / sub bank two')
+
 
 class TestRecord(TestCase):
     setUpClass = classmethod(set_up_class)

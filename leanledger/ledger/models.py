@@ -47,6 +47,10 @@ class Account(models.Model):
     def get_breadcrumbs(self):
         return self.parent.get_breadcrumbs() + (self,) if self.parent else (self,)
 
+    @property
+    def full_name(self):
+        return ' / '.join(account.name for account in self.get_breadcrumbs())
+
     def __str__(self):
         return '{}: {} ({})'.format(self.type, self.name, self.total)
 
