@@ -5,8 +5,6 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.test import TestCase, LiveServerTestCase
 from django.urls import reverse
-from bs4 import BeautifulSoup
-from selenium import webdriver
 
 from ..models import Account, Ledger, Variation, Record
 
@@ -77,12 +75,13 @@ class TestLedgerViews(TestCase):
         self.assertFalse(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
 
-class TestRecordsView(LiveServerTestCase):
+class TestRecordViews(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
 
-        cls.user = User.objects.create_user('Test')
+        cls.username, cls.password = 'joe', 'pass'
+        cls.user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
         cls.record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
         cls.account_cash = Account.objects.create(
@@ -98,25 +97,18 @@ class TestRecordsView(LiveServerTestCase):
         cls.variation_expense_two = Variation.objects.create(
             amount=-60, record=cls.record, account=cls.account_expense_two)
 
-        cls.browser = webdriver.Firefox()
 
     @classmethod
     def tearDownClass(cls):
         cls.user.delete()
-        cls.browser.close()
         super().tearDownClass()
 
     def test_records_page(self):
-        url = reverse('records_list')
-        self.browser.get('{}{}'.format(self.live_server_url, url))
-        divs = self.browser.find_elements_by_tag_name('div')
-        debits_elements = self.browser.find_elements_by_class_name('debit-variation')
-        account_names = {
-            element.find_element_by_class_name('account').text
-            for element in debits_elements
-        }
+        url = reverse('records', args=[self.ledger.pk])
 
-        self.assertEqual(account_names, {'expense one', 'expense two'})
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'ledger/records_list.html')
 
 
 class TestAccountViews(TestCase):

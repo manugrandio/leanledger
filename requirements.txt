@@ -1,4 +1,1 @@
 Django==2.2
-beautifulsoup4
-requests
-selenium
