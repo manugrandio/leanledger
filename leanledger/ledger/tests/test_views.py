@@ -75,27 +75,30 @@ class TestLedgerViews(TestCase):
         self.assertFalse(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
 
+def create_test_data(test):
+    test.username, test.password = 'joe', 'pass'
+    test.user = User.objects.create_user(username=test.username, password=test.password)
+    test.ledger = Ledger.objects.create(user=test.user, name='My Ledger')
+    test.record = Record.objects.create(date=date(2019, 9, 14), ledger=test.ledger)
+    test.account_cash = Account.objects.create(
+        name='cash', type=Account.DESTINATION, ledger=test.ledger)
+    test.account_expense_one = Account.objects.create(
+        name='expense one', type=Account.ORIGIN, ledger=test.ledger)
+    test.account_expense_two = Account.objects.create(
+        name='expense two', type=Account.ORIGIN, ledger=test.ledger)
+    test.variation_cash = Variation.objects.create(
+        amount=-100, record=test.record, account=test.account_cash)
+    test.variation_expense_one = Variation.objects.create(
+        amount=-40, record=test.record, account=test.account_expense_one)
+    test.variation_expense_two = Variation.objects.create(
+        amount=-60, record=test.record, account=test.account_expense_two)
+
+
 class TestRecordViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-
-        cls.username, cls.password = 'joe', 'pass'
-        cls.user = User.objects.create_user(username=cls.username, password=cls.password)
-        cls.ledger = Ledger.objects.create(user=cls.user, name='My Ledger')
-        cls.record = Record.objects.create(date=date(2019, 9, 14), ledger=cls.ledger)
-        cls.account_cash = Account.objects.create(
-            name='cash', type=Account.DESTINATION, ledger=cls.ledger)
-        cls.account_expense_one = Account.objects.create(
-            name='expense one', type=Account.ORIGIN, ledger=cls.ledger)
-        cls.account_expense_two = Account.objects.create(
-            name='expense two', type=Account.ORIGIN, ledger=cls.ledger)
-        cls.variation_cash = Variation.objects.create(
-            amount=-100, record=cls.record, account=cls.account_cash)
-        cls.variation_expense_one = Variation.objects.create(
-            amount=-40, record=cls.record, account=cls.account_expense_one)
-        cls.variation_expense_two = Variation.objects.create(
-            amount=-60, record=cls.record, account=cls.account_expense_two)
+        create_test_data(cls)
 
     @classmethod
     def tearDownClass(cls):
@@ -177,3 +180,27 @@ class TestAccountViews(TestCase):
 
         exists = Account.objects.filter(name=account_name).exists()
         self.assertTrue(exists)
+
+
+class TestVariationViews(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        create_test_data(cls)
+
+    def test_get_partial(self):
+        url = reverse('variation_create', args=[self.ledger.pk, self.record.pk])
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'ledger/variation_create.html')
+        self.assertContains(response, 'Amount')
+
+    def test_get_variation_detail(self):
+        args = [self.ledger.pk, self.record.pk, self.variation_cash.pk]
+        url = reverse('variation_detail', args=args)
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'ledger/variation_detail.html')
+        self.assertContains(response, 'cash')

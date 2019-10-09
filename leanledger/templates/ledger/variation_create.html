@@ -1,0 +1,5 @@
+<form method="POST" action="{% url 'variation_create' ledger_pk record_pk %}">
+  {{ form }}
+  {% csrf_token %}
+  <button class="btn btn-primary" type="submit">Save</button>
+</form>

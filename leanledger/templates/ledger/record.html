@@ -15,5 +15,63 @@
       {% include "ledger/record_single.html" with record=record %}
     </div>
   </div>
+  <div class="row justify-content-center">
+    <div id="add_variation_form_wrapper"></div>
+  </div>
+  <div class="row justify-content-center">
+    <button id="add_variation_btn" class="btn btn-primary">Add variation</button>
+  </div>
 </div>
 {% endblock %}
+
+{% block javascript %}
+<script>
+let addVariationFormUrl = "{% url 'variation_create' ledger.pk record.pk %}";
+
+function mountForm(text, wrapperId, createBtn) {
+  let formWrapper = document.getElementById(wrapperId);
+  formWrapper.innerHTML = text;
+  let createForm = formWrapper.querySelector("form");
+  createForm.onsubmit = function (event) {
+      event.preventDefault();
+      let form = event.target;
+      let data = new FormData(form);
+      let dataEncoded = new URLSearchParams({
+          amount: data.get("amount"),
+          account: data.get("account"),
+          csrfmiddlewaretoken: data.get("csrfmiddlewaretoken"),
+      });
+      fetch(form.action, {
+         method: 'POST',
+         body: dataEncoded.toString(),
+         headers: {
+           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+         }
+      })
+      .then(function(response) {
+          return response.text();
+      })
+      .then(function(text) {
+          formWrapper.innerHTML = text;
+          createBtn.classList.remove("invisible");
+      });
+  };
+}
+
+document.addEventListener("DOMContentLoaded", function(event) {
+    let createBtn = document.getElementById("add_variation_btn");
+    createBtn.onclick = function (event) {
+        fetch(addVariationFormUrl)
+        .then(function(response) {
+            console.log(response);
+            return response.text();
+        })
+        .then(function(text) {
+            mountForm(text, "add_variation_form_wrapper", createBtn);
+            createBtn.classList.add("invisible");
+        });
+    };
+
+});
+</script>
+{% endblock javascript %}

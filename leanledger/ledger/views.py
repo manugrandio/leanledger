@@ -5,8 +5,8 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import AccountForm, LedgerForm, RecordForm
-from .models import Ledger, Account, Record
+from .forms import AccountForm, LedgerForm, RecordForm, VariationForm
+from .models import Ledger, Account, Record, Variation
 
 
 def ledgers(request):
@@ -109,3 +109,27 @@ def account_create(request, ledger_pk):
             return redirect(reverse('accounts', args=[account.ledger.pk]))
         # TODO handle form errors
     return render(request, 'ledger/account_create.html', {'form': form, 'ledger': ledger})
+
+
+def variation_detail(request, ledger_pk, record_pk, variation_pk):
+    variation = Variation.objects.get(pk=variation_pk)
+    return render(request, 'ledger/variation_detail.html', {
+        'variation': variation,
+        'record_pk': record_pk,
+        'ledger_pk': ledger_pk,
+    })
+
+
+def variation_create(request, ledger_pk, record_pk):
+    form = VariationForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            variation = form.save(commit=False)
+            variation.record = Record.objects.get(pk=record_pk)
+            variation.save()
+            return redirect(reverse('variation_detail', args=[ledger_pk, record_pk, variation.pk]))
+    return render(request, 'ledger/variation_create.html', {
+        'form': form,
+        'record_pk': record_pk,
+        'ledger_pk': ledger_pk
+    })
