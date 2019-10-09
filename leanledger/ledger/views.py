@@ -84,8 +84,9 @@ def accounts(request, ledger_pk):
 
 def account_create(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
-    form = AccountForm(request.POST or None)
-    # TODO if `parent` is in GET args, use it as default
+    parent = request.GET.get('parent')
+    form_kwargs = {'initial': {'parent': parent}} if parent is not None else {}
+    form = AccountForm(request.POST or None, **form_kwargs)
     if request.method == 'POST':
         if form.is_valid():
             account = form.save(commit=False)
