@@ -1,24 +1,36 @@
 {% load record_utils %}
 
-<div class="record">
-  <span><strong>{{ record.date }}</strong> (<a href="{% url 'record' ledger.pk record.pk %}">link</a>) {{ record.description }}</span>
-  {% for debit_variation in record.variations_by_type.debit %}
-  <div class="debit-variation">
-    <div class="account">
-      <a title="{{ debit_variation.account.full_name }}" href="{% url 'account' ledger.pk debit_variation.account.pk %}">{{ debit_variation.account.name }}</a>
-    </div>
-    <div class="amount">{{ debit_variation.amount|absolute }}</div>
-    <div class="clear"></div>
-  </div>
-  {% endfor %}
-
-  {% for credit_variation in record.variations_by_type.credit %}
-  <div class="credit-variation">
-    <div class="account">
-      <a title="{{ credit_variation.account.full_name }}" href="{% url 'account' ledger.pk credit_variation.account.pk %}">{{ credit_variation.account.name }}</a>
-    </div>
-    <div class="amount">{{ credit_variation.amount|absolute }}</div>
-    <div class="clear"></div>
-  </div>
-  {% endfor %}
-</div>
+<tr class="table-active" scope="col">
+  <td class="p-2" colspan="2" scope="row">
+    <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a> <em>{{ record.description }}</em>
+  </td>
+  <td></td>
+</tr>
+{% for debit_variation in record.variations_by_type.debit %}
+  <tr>
+    <td scope="row">
+      <a title="{{ debit_variation.account.full_name }}" href="{% url 'account' ledger.pk debit_variation.account.pk %}">
+        {{ debit_variation.account.name }}
+      </a>
+    </td>
+    <td>
+      {{ debit_variation.amount|absolute }}
+    </td>
+    <td>
+    </td>
+  </tr>
+{% endfor %}
+{% for credit_variation in record.variations_by_type.credit %}
+  <tr>
+    <td scope="row">
+      <a class="ml-5" title="{{ credit_variation.account.full_name }}" href="{% url 'account' ledger.pk credit_variation.account.pk %}">
+        {{ credit_variation.account.name }}
+      </a>
+    </td>
+    <td>
+    </td>
+    <td>
+      {{ credit_variation.amount|absolute }}
+    </td>
+  </tr>
+{% endfor %}

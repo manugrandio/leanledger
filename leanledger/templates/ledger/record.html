@@ -7,12 +7,17 @@
 
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-4">
-    </div>
-  </div>
-  <div class="row justify-content-center">
-    <div class="col-4">
-      {% include "ledger/record_single.html" with record=record %}
+    <div class="col-6">
+      <table class="table table-sm mt-4">
+        <thead>
+          <th scope="col"></th>
+          <th scope="col">Debit</th>
+          <th scope="col">Credit</th>
+        </thead>
+        <tbody>
+        {% include "ledger/record_single.html" with record=record %}
+        </tbody>
+      </table>
     </div>
   </div>
   <div class="row justify-content-center">
