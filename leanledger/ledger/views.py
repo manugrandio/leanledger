@@ -127,7 +127,7 @@ def variation_create(request, ledger_pk, record_pk):
             variation = form.save(commit=False)
             variation.record = Record.objects.get(pk=record_pk)
             variation.save()
-            return redirect(reverse('variation_detail', args=[ledger_pk, record_pk, variation.pk]))
+            return redirect(reverse('record', args=[ledger_pk, record_pk]))
     return render(request, 'ledger/variation_create.html', {
         'form': form,
         'record_pk': record_pk,
