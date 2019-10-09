@@ -1,10 +1,9 @@
 {% load record_utils %}
 
 <tr class="table-active" scope="col">
-  <td class="p-2" colspan="2" scope="row">
-    <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a> <em>{{ record.description }}</em>
+  <td class="p-2" colspan="3" scope="row">
+    <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a> <em class="float-right">{{ record.description }}</em>
   </td>
-  <td></td>
 </tr>
 {% for debit_variation in record.variations_by_type.debit %}
   <tr>
