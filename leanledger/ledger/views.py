@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
-from .forms import AccountForm, LedgerForm
+from .forms import AccountForm, LedgerForm, RecordForm
 from .models import Ledger, Account, Record
 
 
@@ -63,6 +63,20 @@ def records(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     context = {'records': Record.objects.all(), 'ledger': ledger}
     return render(request, 'ledger/records_list.html', context)
+
+
+def record_create(request, ledger_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    form = RecordForm(request.POST or None)
+    if form.is_valid():
+        record = form.save(commit=False)
+        record.ledger = ledger
+        record.save()
+        return redirect(reverse('record', args=[ledger.pk, record.pk]))
+    return render(request, 'ledger/record_create.html', context={
+        'form': form,
+        'ledger': ledger,
+    })
 
 
 def account(request, ledger_pk, account_pk):

@@ -3,7 +3,7 @@ from collections import namedtuple
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.test import TestCase, LiveServerTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 from ..models import Account, Ledger, Variation, Record
@@ -75,7 +75,7 @@ class TestLedgerViews(TestCase):
         self.assertFalse(Ledger.objects.filter(pk=self.ledger_two.pk).exists())
 
 
-class TestRecordViews(LiveServerTestCase):
+class TestRecordViews(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -97,10 +97,10 @@ class TestRecordViews(LiveServerTestCase):
         cls.variation_expense_two = Variation.objects.create(
             amount=-60, record=cls.record, account=cls.account_expense_two)
 
-
     @classmethod
     def tearDownClass(cls):
         cls.user.delete()
+        cls.ledger.delete()
         super().tearDownClass()
 
     def test_records_page(self):
@@ -109,6 +109,28 @@ class TestRecordViews(LiveServerTestCase):
         response = self.client.get(url)
 
         self.assertTemplateUsed(response, 'ledger/records_list.html')
+        self.assertContains(response, 'expense one')
+
+    def test_record_create_get(self):
+        url = reverse('record_create', args=[self.ledger.pk])
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'ledger/record_create.html')
+        self.assertContains(response, 'form')
+
+    def test_record_create_post(self):
+        url = reverse('record_create', args=[self.ledger.pk])
+        description = 'Record Description'
+        data = {
+            'description': description,
+            'date': '2019-10-01',
+        }
+
+        response = self.client.post(url, args=[self.ledger.pk], data=data, follow=True)
+
+        self.assertTemplateUsed(response, 'ledger/record.html')
+        self.assertContains(response, description)
 
 
 class TestAccountViews(TestCase):

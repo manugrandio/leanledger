@@ -1,7 +1,7 @@
 {% load record_utils %}
 
 <div class="record">
-  <span><strong>{{ record.date }}</strong> (<a href="{% url 'record' ledger.pk record.pk %}">link</a>)</span>
+  <span><strong>{{ record.date }}</strong> (<a href="{% url 'record' ledger.pk record.pk %}">link</a>) {{ record.description }}</span>
   {% for debit_variation in record.variations_by_type.debit %}
   <div class="debit-variation">
     <div class="account">
