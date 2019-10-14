@@ -172,7 +172,6 @@ class TestAccountViews(TestCase):
         account_name = 'bank three'
         data = {
             'name': account_name,
-            'type': Account.DESTINATION,
             'parent': self.account_cash.pk,
         }
 
