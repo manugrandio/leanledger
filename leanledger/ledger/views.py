@@ -105,6 +105,7 @@ def account_create(request, ledger_pk):
         if form.is_valid():
             account = form.save(commit=False)
             account.ledger = Ledger.objects.get(pk=ledger_pk)
+            account.type = account.parent.type
             account.save()
             return redirect(reverse('accounts', args=[account.ledger.pk]))
         # TODO handle form errors

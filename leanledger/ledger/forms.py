@@ -11,7 +11,7 @@ def set_inputs_css_class(form):
 class AccountForm(ModelForm):
     class Meta:
         model = Account
-        fields = ['name', 'type', 'parent']
+        fields = ['name', 'parent']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
