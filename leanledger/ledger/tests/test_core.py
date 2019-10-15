@@ -49,9 +49,9 @@ class TestRecordIsBalanced(TestCase):
     def test_mixed_ok(self):
         record = Mock()
         record.variations.all.return_value = [
-            Mock(amount=100, type='debit'),
-            Mock(amount=-80, type='debit'),
-            Mock(amount=20, type='credit'),
+            Mock(amount=30, type='debit'),
+            Mock(amount=20, type='debit'),
+            Mock(amount=-50, type='credit'),
         ]
 
         self.assertTrue(record_is_balanced(record))
