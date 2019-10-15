@@ -4,6 +4,8 @@ from itertools import groupby
 from django.db import models
 from django.contrib.auth.models import User
 
+from .core import DEBIT, CREDIT, record_is_balanced
+
 
 class Ledger(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -75,6 +77,8 @@ class Record(models.Model):
         grouped = groupby(variations, get_type)
         return {type_: list(variations) for type_, variations in grouped}
 
+    is_balanced = record_is_balanced
+
 
 class VariationManager(models.Manager):
     @property
@@ -87,8 +91,8 @@ class Variation(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='variations')
     amount = models.DecimalField(max_digits=16, decimal_places=2)
 
-    CREDIT = 'credit'
-    DEBIT = 'debit'
+    DEBIT = DEBIT
+    CREDIT = CREDIT
 
     objects = VariationManager()
 

@@ -1,10 +1,11 @@
-from .models import Variation  # TODO do not import from models.py
+DEBIT = 'debit'
+CREDIT = 'credit'
 
 
 def record_is_balanced(record):
     debit_sum, credit_sum = 0, 0
-    for variation in record.variations:
-        if variation.type == Variation.DEBIT:
+    for variation in record.variations.all():
+        if variation.type == DEBIT:
             debit_sum += variation.amount
         else:
             credit_sum += variation.amount

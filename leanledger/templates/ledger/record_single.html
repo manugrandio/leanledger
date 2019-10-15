@@ -2,7 +2,13 @@
 
 <tr class="table-active" scope="col">
   <td class="p-2" colspan="3" scope="row">
-    <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a> <em class="float-right">{{ record.description }}</em>
+    <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a>
+    {% if record.is_balanced %}
+      <span class="float-right badge badge-success">Balanced</span>
+    {% else %}
+      <span class="float-right badge badge-danger">Unbalanced</span>
+    {% endif %}
+    <em class="mr-3 float-right">{{ record.description }}</em>
   </td>
 </tr>
 {% for debit_variation in record.variations_by_type.debit %}
