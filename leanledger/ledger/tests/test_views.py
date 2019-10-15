@@ -180,6 +180,27 @@ class TestAccountViews(TestCase):
         exists = Account.objects.filter(name=account_name).exists()
         self.assertTrue(exists)
 
+    def test_account_get_delete(self):
+        account = Account.objects.create(name='account', type=Account.DESTINATION, ledger=self.ledger)
+        url = reverse('account_delete', args=[self.ledger.pk, account.pk])
+
+        response = self.client.get(url)
+
+        self.assertTemplateUsed(response, 'ledger/account_delete.html')
+        self.assertContains(response, account.name)
+        self.assertTrue(Account.objects.filter(name='account').exists())
+
+        account.delete()
+
+    def test_account_delete_post(self):
+        account = Account.objects.create(name='account two', type=Account.DESTINATION, ledger=self.ledger)
+        url = reverse('account_delete', args=[self.ledger.pk, account.pk])
+
+        response = self.client.post(url, follow=True)
+
+        self.assertTemplateUsed(response, 'ledger/accounts_list.html')
+        self.assertFalse(Account.objects.filter(name='account').exists())
+
 
 class TestVariationViews(TestCase):
     @classmethod

@@ -107,3 +107,7 @@ class Variation(models.Model):
         }
         is_increase = self.amount > 0
         return account_types[(self.account.type, is_increase)]
+
+    def __str__(self):
+        return 'Variation({}, {}, {})'.format(
+            self.account.name, abs(self.amount), self.type)

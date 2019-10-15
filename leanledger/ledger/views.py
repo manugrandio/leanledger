@@ -79,7 +79,7 @@ def record_create(request, ledger_pk):
     })
 
 
-def account(request, ledger_pk, account_pk):
+def account_detail(request, ledger_pk, account_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     account = Account.objects.get(pk=account_pk)  # TODO replace for get_or_404
     return render(request, 'ledger/account.html', {'account': account, 'ledger': ledger})
@@ -110,6 +110,18 @@ def account_create(request, ledger_pk):
             return redirect(reverse('accounts', args=[account.ledger.pk]))
         # TODO handle form errors
     return render(request, 'ledger/account_create.html', {'form': form, 'ledger': ledger})
+
+
+def account_delete(request, ledger_pk, account_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    account = Account.objects.get(pk=account_pk)
+    if request.method == 'POST':
+        account.delete()
+        return redirect(reverse('accounts', args=[ledger.pk]))
+    return render(request, 'ledger/account_delete.html', {
+        'ledger': ledger,
+        'account': account,
+    })
 
 
 def variation_detail(request, ledger_pk, record_pk, variation_pk):
