@@ -83,13 +83,14 @@ class Record(models.Model):
 class VariationManager(models.Manager):
     @property
     def total(self):
-        return self.all().aggregate(models.Sum('amount'))['amount__sum']
+        amount_sum = self.all().aggregate(models.Sum('amount'))['amount__sum']
+        return amount_sum.quantize(Decimal('0.01')) if amount_sum is not None else None
 
 
 class Variation(models.Model):
     record = models.ForeignKey(Record, on_delete=models.CASCADE, related_name='variations')
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='variations')
-    amount = models.DecimalField(max_digits=16, decimal_places=2)
+    amount = models.DecimalField(max_digits=16, decimal_places=2)  # TODO cannot be 0
 
     DEBIT = DEBIT
     CREDIT = CREDIT
