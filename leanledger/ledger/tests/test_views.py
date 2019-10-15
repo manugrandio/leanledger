@@ -224,3 +224,21 @@ class TestVariationViews(TestCase):
 
         self.assertTemplateUsed(response, 'ledger/variation_detail.html')
         self.assertContains(response, 'cash')
+
+    def test_variation_delete_post(self):
+        variation = Variation.objects.create(
+            amount=10, record=self.record, account=self.account_cash)
+        args = [self.ledger.pk, self.record.pk, variation.pk]
+        url = reverse('variation_delete', args=args)
+
+        self.client.post(url)
+
+        self.assertFalse(Variation.objects.filter(pk=variation.pk).exists())
+
+    def test_variation_delete_get(self):
+        args = [self.ledger.pk, self.record.pk, self.variation_cash.pk]
+        url = reverse('variation_delete', args=args)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 403)

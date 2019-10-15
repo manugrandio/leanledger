@@ -2,6 +2,7 @@ import json
 from collections import namedtuple
 
 from django.contrib.auth.models import AnonymousUser, User
+from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -73,6 +74,7 @@ def record_create(request, ledger_pk):
         record.ledger = ledger
         record.save()
         return redirect(reverse('record', args=[ledger.pk, record.pk]))
+        # TODO handle form errors
     return render(request, 'ledger/record_create.html', context={
         'form': form,
         'ledger': ledger,
@@ -141,8 +143,16 @@ def variation_create(request, ledger_pk, record_pk):
             variation.record = Record.objects.get(pk=record_pk)
             variation.save()
             return redirect(reverse('record', args=[ledger_pk, record_pk]))
+        # TODO handle form errors
     return render(request, 'ledger/variation_create.html', {
         'form': form,
         'record_pk': record_pk,
         'ledger_pk': ledger_pk
     })
+
+
+def variation_delete(request, ledger_pk, record_pk, variation_pk):
+    if request.method != 'POST':
+        return HttpResponseForbidden('Method not allowed')
+    Variation.objects.get(pk=variation_pk).delete()
+    return redirect(reverse('record', args=[ledger_pk, record_pk]))

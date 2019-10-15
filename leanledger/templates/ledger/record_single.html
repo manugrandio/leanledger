@@ -1,12 +1,12 @@
 {% load record_utils %}
 
 <tr class="table-active" scope="col">
-  <td class="p-2" colspan="3" scope="row">
+  <td class="p-2" colspan="4" scope="row">
     <a href="{% url 'record' ledger.pk record.pk %}">{{ record.date }}</a>
     {% if record.is_balanced %}
-      <span class="float-right badge badge-success">Balanced</span>
+      <span class="float-right badge badge-success">ok</span>
     {% else %}
-      <span class="float-right badge badge-danger">Unbalanced</span>
+      <span class="float-right badge badge-danger">unbalanced</span>
     {% endif %}
     <em class="mr-3 float-right">{{ record.description }}</em>
   </td>
@@ -23,6 +23,12 @@
     </td>
     <td>
     </td>
+    <td>
+      <form method="POST" action="{% url 'variation_delete' ledger.pk record.pk debit_variation.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+      </form>
+    </td>
   </tr>
 {% endfor %}
 {% for credit_variation in record.variations_by_type.credit %}
@@ -36,6 +42,12 @@
     </td>
     <td>
       {{ credit_variation.amount|absolute }}
+    </td>
+    <td>
+      <form method="POST" action="{% url 'variation_delete' ledger.pk record.pk credit_variation.pk %}">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+      </form>
     </td>
   </tr>
 {% endfor %}
