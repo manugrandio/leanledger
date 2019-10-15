@@ -61,7 +61,7 @@ def record(request, ledger_pk, record_pk):
 
 def records(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
-    context = {'records': Record.objects.all(), 'ledger': ledger}
+    context = {'records': Record.objects.all().order_by('-date'), 'ledger': ledger}
     return render(request, 'ledger/records_list.html', context)
 
 
