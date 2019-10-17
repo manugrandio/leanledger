@@ -82,6 +82,19 @@ def record_create(request, ledger_pk):
     })
 
 
+def record_delete(request, ledger_pk, record_pk):
+    ledger = Ledger.objects.get(pk=ledger_pk)
+    record = Record.objects.get(pk=record_pk)
+    if request.method == 'POST':
+        record.delete()
+        return redirect(reverse('records', args=[ledger_pk]))
+    return render(request, 'ledger/record_delete.html', {
+        'record': record,
+        'ledger': ledger,
+    })
+
+
+
 def account_detail(request, ledger_pk, account_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     account = Account.objects.get(pk=account_pk)  # TODO replace for get_or_404

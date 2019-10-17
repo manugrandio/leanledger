@@ -135,6 +135,24 @@ class TestRecordViews(TestCase):
         self.assertTemplateUsed(response, 'ledger/record.html')
         self.assertContains(response, description)
 
+    def test_record_delete_get(self):
+        record = Record.objects.create(date='2019-10-01', ledger=self.ledger)
+        url = reverse('record_delete', args=[self.ledger.pk, record.pk])
+
+        response = self.client.get(url)
+
+        self.assertContains(response, 'sure')
+        self.assertTemplateUsed(response, 'ledger/record_delete.html')
+        record.delete()
+
+    def test_record_delete_post(self):
+        record = Record.objects.create(date='2019-10-01', ledger=self.ledger)
+        url = reverse('record_delete', args=[self.ledger.pk, record.pk])
+
+        response = self.client.post(url)
+
+        self.assertFalse(Record.objects.filter(pk=record.pk).exists())
+
 
 class TestAccountViews(TestCase):
     @classmethod
