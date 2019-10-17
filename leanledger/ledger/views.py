@@ -10,7 +10,7 @@ from .forms import AccountForm, LedgerForm, RecordForm, VariationForm
 from .models import Ledger, Account, Record, Variation
 
 
-def ledgers(request):
+def ledger_list(request):
     ledgers = Ledger.objects.all()  # TODO get just the user's ledgers
     return render(request, 'ledger/ledger_list.html', {'ledgers': ledgers})
 
@@ -26,7 +26,7 @@ def ledger_new(request):
             ledger = form.save(commit=False)
             ledger.user = get_user()
             ledger.save()
-            return redirect(reverse('ledgers'))
+            return redirect(reverse('ledger_list'))
         # TODO handle errors (and also in template)
         return render(request, 'ledger/ledger_new.html', {'form': form})
     return render(request, 'ledger/ledger_new.html', {'form': form})
@@ -38,7 +38,7 @@ def ledger_update(request, ledger_pk):
         form = LedgerForm(request.POST, instance=ledger)
         if form.is_valid():
             form.save()
-            return redirect(reverse('ledgers'))
+            return redirect(reverse('ledger_list'))
         # TODO handle errors (and also in template)
     else:
         form = LedgerForm(instance=ledger)
@@ -49,7 +49,7 @@ def ledger_delete(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     if request.method == 'POST':
         ledger.delete()
-        return redirect(reverse('ledgers'))
+        return redirect(reverse('ledger_list'))
     else:
         return render(request, 'ledger/ledger_delete_confirmation.html', {'ledger': ledger})
 
