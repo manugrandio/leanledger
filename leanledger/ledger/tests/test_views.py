@@ -107,7 +107,7 @@ class TestRecordViews(TestCase):
         super().tearDownClass()
 
     def test_records_page(self):
-        url = reverse('records', args=[self.ledger.pk])
+        url = reverse('record_list', args=[self.ledger.pk])
 
         response = self.client.get(url)
 

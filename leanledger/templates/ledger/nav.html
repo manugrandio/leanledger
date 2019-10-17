@@ -3,7 +3,7 @@
   <div class="collapse navbar-collapse">
     <ul class="navbar-nav">
       <li class="nav-item {% if active == 'records' %}active{% endif %}">
-        <a class="nav-link" href="{% url 'records' ledger.pk %}">Records</a>
+        <a class="nav-link" href="{% url 'record_list' ledger.pk %}">Records</a>
       </li>
       <li class="nav-item {% if active == 'accounts' %}active{% endif %}">
         <a class="nav-link" href="{% url 'accounts' ledger.pk %}">Accounts</a>

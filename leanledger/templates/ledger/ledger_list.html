@@ -4,7 +4,7 @@
 <ul>
 {% for ledger in ledgers %}
   <li>
-    <a href="{% url 'records' ledger.pk %}">{{ ledger.name }}</a>
+    <a href="{% url 'record_list' ledger.pk %}">{{ ledger.name }}</a>
     (<a href="{% url 'ledger_update' ledger.pk %}">Update</a>, <a href="{% url 'ledger_delete' ledger.pk %}">Delete</a>)
   </li>
 {% endfor %}

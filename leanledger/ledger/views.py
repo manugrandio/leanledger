@@ -60,7 +60,7 @@ def record(request, ledger_pk, record_pk):
     return render(request, 'ledger/record.html', {'record': record, 'ledger': ledger})
 
 
-def records(request, ledger_pk):
+def record_list(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     records = Record.objects.filter(ledger=ledger_pk).order_by('-date')
     context = {'records': records, 'ledger': ledger}
@@ -87,7 +87,7 @@ def record_delete(request, ledger_pk, record_pk):
     record = Record.objects.get(pk=record_pk)
     if request.method == 'POST':
         record.delete()
-        return redirect(reverse('records', args=[ledger_pk]))
+        return redirect(reverse('record_list', args=[ledger_pk]))
     return render(request, 'ledger/record_delete.html', {
         'record': record,
         'ledger': ledger,
