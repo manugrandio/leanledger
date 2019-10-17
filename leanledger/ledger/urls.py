@@ -10,15 +10,15 @@ from .views import (
 
 urlpatterns = [
     path('', ledger_list, name='ledger_list'),
-    path('new/', ledger_new, name='ledger_new'),
+    path('create/', ledger_new, name='ledger_new'),
     path('<int:ledger_pk>/delete/', ledger_delete, name='ledger_delete'),
     path('<int:ledger_pk>/update/', ledger_update, name='ledger_update'),
     path('<int:ledger_pk>/record/', record_list, name='record_list'),
-    path('<int:ledger_pk>/record/new/', record_create, name='record_create'),
+    path('<int:ledger_pk>/record/create/', record_create, name='record_create'),
     path('<int:ledger_pk>/record/<int:record_pk>/', record, name='record'),
     path('<int:ledger_pk>/record/<int:record_pk>/delete/', record_delete, name='record_delete'),
     path(
-        '<int:ledger_pk>/record/<int:record_pk>/variation/new/', variation_create,
+        '<int:ledger_pk>/record/<int:record_pk>/variation/create/', variation_create,
         name='variation_create'),
     path(
         '<int:ledger_pk>/record/<int:record_pk>/variation/<int:variation_pk>/', variation_detail,

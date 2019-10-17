@@ -27,7 +27,7 @@ class TestLedgerViews(TestCase):
         self.ledger_two.delete()
 
     def test_get_new(self):
-        response = self.client.get('/ledger/new/')
+        response = self.client.get(reverse('ledger_new'))
 
         self.assertTemplateUsed(response, 'ledger/ledger_new.html')
 
