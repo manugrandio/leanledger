@@ -27,15 +27,15 @@ class TestLedgerViews(TestCase):
         self.ledger_two.delete()
 
     def test_get_new(self):
-        response = self.client.get(reverse('ledger_new'))
+        response = self.client.get(reverse('ledger_create'))
 
-        self.assertTemplateUsed(response, 'ledger/ledger_new.html')
+        self.assertTemplateUsed(response, 'ledger/ledger_create.html')
 
     def test_post_new(self):
         self.client.login(username='joe', password='pass')
         data = {'name': self.ledger_name}
 
-        response = self.client.post(reverse('ledger_new'), data=data, follow=True)
+        response = self.client.post(reverse('ledger_create'), data=data, follow=True)
 
         self.assertIn(self.ledger_name, response.content.decode())
 

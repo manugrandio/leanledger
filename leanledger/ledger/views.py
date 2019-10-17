@@ -15,7 +15,7 @@ def ledger_list(request):
     return render(request, 'ledger/ledger_list.html', {'ledgers': ledgers})
 
 
-def ledger_new(request):
+def ledger_create(request):
     def get_user():  # TODO replace for just `request.user` when auth is set up
         return User.objects.first() if isinstance(request.user, AnonymousUser) else request.user
 
@@ -28,8 +28,8 @@ def ledger_new(request):
             ledger.save()
             return redirect(reverse('ledger_list'))
         # TODO handle errors (and also in template)
-        return render(request, 'ledger/ledger_new.html', {'form': form})
-    return render(request, 'ledger/ledger_new.html', {'form': form})
+        return render(request, 'ledger/ledger_create.html', {'form': form})
+    return render(request, 'ledger/ledger_create.html', {'form': form})
 
 
 def ledger_update(request, ledger_pk):
