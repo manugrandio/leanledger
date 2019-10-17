@@ -174,12 +174,12 @@ class TestAccountViews(TestCase):
     def tearDownClass(cls):
         cls.user.delete()
 
-    def test_accounts_list(self):
+    def test_account_list(self):
         url = reverse('account_list', args=[self.ledger.pk])
 
         response = self.client.get(url, content_type='application/json')
 
-        self.assertTemplateUsed(response, 'ledger/accounts_list.html')
+        self.assertTemplateUsed(response, 'ledger/account_list.html')
 
     def test_account_get_create(self):
         response = self.client.get(reverse('account_create', args=[self.ledger.pk]))
@@ -216,7 +216,7 @@ class TestAccountViews(TestCase):
 
         response = self.client.post(url, follow=True)
 
-        self.assertTemplateUsed(response, 'ledger/accounts_list.html')
+        self.assertTemplateUsed(response, 'ledger/account_list.html')
         self.assertFalse(Account.objects.filter(name='account').exists())
 
 

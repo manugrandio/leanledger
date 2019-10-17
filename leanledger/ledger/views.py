@@ -105,7 +105,7 @@ def account_list(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     destination_accounts = Account.objects.destination_accounts(ledger_pk)
     origin_accounts = Account.objects.origin_accounts(ledger_pk)
-    return render(request, 'ledger/accounts_list.html', {
+    return render(request, 'ledger/account_list.html', {
         'destination_accounts': destination_accounts,
         'origin_accounts': origin_accounts,
         'ledger': ledger,
