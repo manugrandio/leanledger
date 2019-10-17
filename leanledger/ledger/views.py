@@ -101,7 +101,7 @@ def account_detail(request, ledger_pk, account_pk):
     return render(request, 'ledger/account.html', {'account': account, 'ledger': ledger})
 
 
-def accounts(request, ledger_pk):
+def account_list(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     destination_accounts = Account.objects.destination_accounts(ledger_pk)
     origin_accounts = Account.objects.origin_accounts(ledger_pk)
@@ -123,7 +123,7 @@ def account_create(request, ledger_pk):
             account.ledger = Ledger.objects.get(pk=ledger_pk)
             account.type = account.parent.type
             account.save()
-            return redirect(reverse('accounts', args=[account.ledger.pk]))
+            return redirect(reverse('account_list', args=[account.ledger.pk]))
         # TODO handle form errors
     return render(request, 'ledger/account_create.html', {'form': form, 'ledger': ledger})
 
@@ -133,7 +133,7 @@ def account_delete(request, ledger_pk, account_pk):
     account = Account.objects.get(pk=account_pk)
     if request.method == 'POST':
         account.delete()
-        return redirect(reverse('accounts', args=[ledger.pk]))
+        return redirect(reverse('account_list', args=[ledger.pk]))
     return render(request, 'ledger/account_delete.html', {
         'ledger': ledger,
         'account': account,

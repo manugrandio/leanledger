@@ -175,7 +175,7 @@ class TestAccountViews(TestCase):
         cls.user.delete()
 
     def test_accounts_list(self):
-        url = reverse('accounts', args=[self.ledger.pk])
+        url = reverse('account_list', args=[self.ledger.pk])
 
         response = self.client.get(url, content_type='application/json')
 

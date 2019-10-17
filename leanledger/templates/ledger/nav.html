@@ -6,7 +6,7 @@
         <a class="nav-link" href="{% url 'record_list' ledger.pk %}">Records</a>
       </li>
       <li class="nav-item {% if active == 'accounts' %}active{% endif %}">
-        <a class="nav-link" href="{% url 'accounts' ledger.pk %}">Accounts</a>
+        <a class="nav-link" href="{% url 'account_list' ledger.pk %}">Accounts</a>
       </li>
     </ul>
   </div>
