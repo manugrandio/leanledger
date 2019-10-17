@@ -51,7 +51,7 @@ def ledger_delete(request, ledger_pk):
         ledger.delete()
         return redirect(reverse('ledger_list'))
     else:
-        return render(request, 'ledger/ledger_delete_confirmation.html', {'ledger': ledger})
+        return render(request, 'ledger/ledger_delete.html', {'ledger': ledger})
 
 
 def record_detail(request, ledger_pk, record_pk):
