@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (
     ledger_list, ledger_create, ledger_update, ledger_delete,
-    record, record_create, record_delete, record_list,
+    record_detail, record_create, record_delete, record_list,
     account_detail, account_create, account_delete, account_list,
     variation_create, variation_detail, variation_delete,
 )
@@ -18,7 +18,7 @@ urlpatterns = [
     # Record
     path('<int:ledger_pk>/record/', record_list, name='record_list'),
     path('<int:ledger_pk>/record/create/', record_create, name='record_create'),
-    path('<int:ledger_pk>/record/<int:record_pk>/', record, name='record'),
+    path('<int:ledger_pk>/record/<int:record_pk>/', record_detail, name='record_detail'),
     path('<int:ledger_pk>/record/<int:record_pk>/delete/', record_delete, name='record_delete'),
 
     # Account

@@ -132,7 +132,7 @@ class TestRecordViews(TestCase):
 
         response = self.client.post(url, args=[self.ledger.pk], data=data, follow=True)
 
-        self.assertTemplateUsed(response, 'ledger/record.html')
+        self.assertTemplateUsed(response, 'ledger/record_detail.html')
         self.assertContains(response, description)
 
     def test_record_delete_get(self):

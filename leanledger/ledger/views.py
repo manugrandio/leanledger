@@ -54,10 +54,10 @@ def ledger_delete(request, ledger_pk):
         return render(request, 'ledger/ledger_delete_confirmation.html', {'ledger': ledger})
 
 
-def record(request, ledger_pk, record_pk):
+def record_detail(request, ledger_pk, record_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     record = Record.objects.get(pk=record_pk)  # TODO replace for get_or_404
-    return render(request, 'ledger/record.html', {'record': record, 'ledger': ledger})
+    return render(request, 'ledger/record_detail.html', {'record': record, 'ledger': ledger})
 
 
 def record_list(request, ledger_pk):
@@ -74,7 +74,7 @@ def record_create(request, ledger_pk):
         record = form.save(commit=False)
         record.ledger = ledger
         record.save()
-        return redirect(reverse('record', args=[ledger.pk, record.pk]))
+        return redirect(reverse('record_detail', args=[ledger.pk, record.pk]))
         # TODO handle form errors
     return render(request, 'ledger/record_create.html', context={
         'form': form,
@@ -169,4 +169,4 @@ def variation_delete(request, ledger_pk, record_pk, variation_pk):
     if request.method != 'POST':
         return HttpResponseForbidden('Method not allowed')
     Variation.objects.get(pk=variation_pk).delete()
-    return redirect(reverse('record', args=[ledger_pk, record_pk]))
+    return redirect(reverse('record_detail', args=[ledger_pk, record_pk]))

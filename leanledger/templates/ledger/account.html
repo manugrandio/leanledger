@@ -33,7 +33,7 @@
 
         <ul>
           {% for variation in account.variations.all %}
-            <li><a href="{% url "record" ledger.pk variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
+            <li><a href="{% url "record_detail" ledger.pk variation.record.pk %}">{{ variation.record.date }}</a> ({{ variation.amount }})</li>
           {% endfor %}
         </ul>
       {% else %}
