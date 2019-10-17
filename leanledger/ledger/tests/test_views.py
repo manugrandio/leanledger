@@ -111,7 +111,7 @@ class TestRecordViews(TestCase):
 
         response = self.client.get(url)
 
-        self.assertTemplateUsed(response, 'ledger/records_list.html')
+        self.assertTemplateUsed(response, 'ledger/record_list.html')
         self.assertContains(response, 'expense one')
 
     def test_record_create_get(self):

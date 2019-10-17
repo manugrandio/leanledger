@@ -64,7 +64,7 @@ def record_list(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     records = Record.objects.filter(ledger=ledger_pk).order_by('-date')
     context = {'records': records, 'ledger': ledger}
-    return render(request, 'ledger/records_list.html', context)
+    return render(request, 'ledger/record_list.html', context)
 
 
 def record_create(request, ledger_pk):
