@@ -14,7 +14,7 @@
 {% for debit_variation in record.variations_by_type.debit %}
   <tr>
     <td scope="row">
-      <a title="{{ debit_variation.account.full_name }}" href="{% url 'account' ledger.pk debit_variation.account.pk %}">
+      <a title="{{ debit_variation.account.full_name }}" href="{% url 'account_detail' ledger.pk debit_variation.account.pk %}">
         {{ debit_variation.account.name }}
       </a>
     </td>
@@ -34,7 +34,7 @@
 {% for credit_variation in record.variations_by_type.credit %}
   <tr>
     <td scope="row">
-      <a class="ml-5" title="{{ credit_variation.account.full_name }}" href="{% url 'account' ledger.pk credit_variation.account.pk %}">
+      <a class="ml-5" title="{{ credit_variation.account.full_name }}" href="{% url 'account_detail' ledger.pk credit_variation.account.pk %}">
         {{ credit_variation.account.name }}
       </a>
     </td>

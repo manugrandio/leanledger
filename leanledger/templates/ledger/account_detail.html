@@ -14,7 +14,7 @@
             <li class="breadcrumb-item active">{{ breadcrumb.name }}</li>
           {% else %}
             <li class="breadcrumb-item">
-              <a href="{% url 'account' ledger.pk breadcrumb.pk %}">{{ breadcrumb.name }}</a>
+              <a href="{% url 'account_detail' ledger.pk breadcrumb.pk %}">{{ breadcrumb.name }}</a>
             </li>
           {% endif %}
         {% endfor %}

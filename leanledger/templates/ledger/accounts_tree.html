@@ -1,6 +1,6 @@
 <ul>
   {% for account in accounts %}
-  <li><a href="{% url 'account' account.ledger.pk account.pk %}">{{ account.name }}</a>
+  <li><a href="{% url 'account_detail' account.ledger.pk account.pk %}">{{ account.name }}</a>
       <small>(Total: {{ account.total }})</small>
       <a href="{% url 'account_delete' account.ledger.pk account.pk %}"><small>Delete</small></a>
     {% if account.children.exists %}

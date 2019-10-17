@@ -24,7 +24,7 @@ urlpatterns = [
     # Account
     path('<int:ledger_pk>/account/', account_list, name='account_list'),
     path('<int:ledger_pk>/account/create/', account_create, name='account_create'),
-    path('<int:ledger_pk>/account/<int:account_pk>/', account_detail, name='account'),
+    path('<int:ledger_pk>/account/<int:account_pk>/', account_detail, name='account_detail'),
     path('<int:ledger_pk>/account/<int:account_pk>/delete/', account_delete, name='account_delete'),
 
     # Variation

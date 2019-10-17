@@ -2,7 +2,7 @@
 
 <div class="debit-variation">
   <div class="account">
-    <a title="{{ variation.account.full_name }}" href="{% url 'account' ledger_pk variation.account.pk %}">{{ variation.account.name }}</a>
+    <a title="{{ variation.account.full_name }}" href="{% url 'account_detail' ledger_pk variation.account.pk %}">{{ variation.account.name }}</a>
   </div>
   <div class="amount">{{ variation.amount|absolute }}</div>
   <div class="clear"></div>

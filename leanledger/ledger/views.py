@@ -98,7 +98,7 @@ def record_delete(request, ledger_pk, record_pk):
 def account_detail(request, ledger_pk, account_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     account = Account.objects.get(pk=account_pk)  # TODO replace for get_or_404
-    return render(request, 'ledger/account.html', {'account': account, 'ledger': ledger})
+    return render(request, 'ledger/account_detail.html', {'account': account, 'ledger': ledger})
 
 
 def account_list(request, ledger_pk):
