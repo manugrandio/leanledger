@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 
 {% include "ledger/nav.html" with active="records" %}
 
 <div class="container">
   <div class="row justify-content-center">
+    <div class="col-2" id="root"></div>
+
     <div class="col-6">
       <table class="table table-sm mt-4">
         <thead>
@@ -30,6 +34,7 @@
 {% endblock %}
 
 {% block javascript %}
+<script src="{% static 'bundle.js' %}"></script>
 <script>
 let addVariationFormUrl = "{% url 'variation_create' ledger.pk record.pk %}";
 
