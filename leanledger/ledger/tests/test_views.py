@@ -234,15 +234,6 @@ class TestVariationViews(TestCase):
         self.assertTemplateUsed(response, 'ledger/variation_create.html')
         self.assertContains(response, 'Amount')
 
-    def test_get_variation_detail(self):
-        args = [self.ledger.pk, self.record.pk, self.variation_cash.pk]
-        url = reverse('variation_detail', args=args)
-
-        response = self.client.get(url)
-
-        self.assertTemplateUsed(response, 'ledger/variation_detail.html')
-        self.assertContains(response, 'cash')
-
     def test_variation_delete_post(self):
         variation = Variation.objects.create(
             amount=10, record=self.record, account=self.account_cash)

@@ -140,15 +140,6 @@ def account_delete(request, ledger_pk, account_pk):
     })
 
 
-def variation_detail(request, ledger_pk, record_pk, variation_pk):
-    variation = Variation.objects.get(pk=variation_pk)
-    return render(request, 'ledger/variation_detail.html', {
-        'variation': variation,
-        'record_pk': record_pk,
-        'ledger_pk': ledger_pk,
-    })
-
-
 def variation_create(request, ledger_pk, record_pk):
     form = VariationForm(request.POST or None)
     if request.method == 'POST':

@@ -4,7 +4,7 @@ from .views import (
     ledger_list, ledger_create, ledger_update, ledger_delete,
     record_detail, record_create, record_delete, record_list,
     account_detail, account_create, account_delete, account_list,
-    variation_create, variation_detail, variation_delete,
+    variation_create, variation_delete,
 )
 
 
@@ -31,9 +31,6 @@ urlpatterns = [
     path(
         '<int:ledger_pk>/record/<int:record_pk>/variation/create/', variation_create,
         name='variation_create'),
-    path(
-        '<int:ledger_pk>/record/<int:record_pk>/variation/<int:variation_pk>/', variation_detail,
-        name='variation_detail'),
     path(
         '<int:ledger_pk>/record/<int:record_pk>/variation/<int:variation_pk>/delete/',
         variation_delete,

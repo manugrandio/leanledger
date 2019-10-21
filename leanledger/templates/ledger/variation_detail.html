@@ -1,9 +1,33 @@
 {% load record_utils %}
 
-<div class="debit-variation">
-  <div class="account">
-    <a title="{{ variation.account.full_name }}" href="{% url 'account_detail' ledger_pk variation.account.pk %}">{{ variation.account.name }}</a>
-  </div>
-  <div class="amount">{{ variation.amount|absolute }}</div>
-  <div class="clear"></div>
-</div>
+<tr>
+  <td scope="row">
+    <a
+      class="{% if variation_type == 'CREDIT' %}ml-5{% endif %}"
+      title="{{ variation.account.full_name }}"
+      href="{% url 'account_detail' ledger.pk variation.account.pk %}">
+      {{ variation.account.name }}
+    </a>
+  </td>
+
+{% if variation_type == "DEBIT" %}
+  <td>
+    {{ variation.amount|absolute }}
+  </td>
+  <td>
+  </td>
+{% else %}
+  <td>
+  </td>
+  <td>
+    {{ variation.amount|absolute }}
+  </td>
+{% endif %}
+
+  <td>
+    <form method="POST" action="{% url 'variation_delete' ledger.pk record.pk variation.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+    </form>
+  </td>
+</tr>
