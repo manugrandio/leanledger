@@ -1,17 +1,24 @@
-<tr class="table-active" scope="col">
-  <td class="p-2" colspan="4" scope="row">
+<div class="card mb-3 shadow-sm">
+  <div class="card-header">
     <a href="{% url 'record_detail' ledger.pk record.pk %}">{{ record.date }}</a>
     {% if record.is_balanced %}
-      <span class="float-right badge badge-success">ok</span>
+      <span class="float-right badge badge-success align-bottom">ok</span>
     {% else %}
       <span class="float-right badge badge-danger">unbalanced</span>
     {% endif %}
     <em class="mr-3 float-right">{{ record.description }}</em>
-  </td>
-</tr>
-{% for debit_variation in record.variations_by_type.debit %}
-  {% include 'ledger/variation_detail.html' with variation=debit_variation variation_type="DEBIT" %}
-{% endfor %}
-{% for credit_variation in record.variations_by_type.credit %}
-  {% include 'ledger/variation_detail.html' with variation=credit_variation variation_type="CREDIT" %}
-{% endfor %}
+  </div>
+
+  <div class="card-body">
+    <table class="table table-borderless table-sm mb-0">
+      <tbody>
+      {% for debit_variation in record.variations_by_type.debit %}
+        {% include 'ledger/variation_detail.html' with variation=debit_variation variation_type="DEBIT" %}
+      {% endfor %}
+      {% for credit_variation in record.variations_by_type.credit %}
+        {% include 'ledger/variation_detail.html' with variation=credit_variation variation_type="CREDIT" %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

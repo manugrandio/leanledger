@@ -12,7 +12,7 @@
 
 {% if variation_type == "DEBIT" %}
   <td>
-    {{ variation.amount|absolute }}
+    <span class="float-right">{{ variation.amount|absolute }}</span>
   </td>
   <td>
   </td>
@@ -20,7 +20,7 @@
   <td>
   </td>
   <td>
-    {{ variation.amount|absolute }}
+    <span class="float-right">{{ variation.amount|absolute }}</span>
   </td>
 {% endif %}
 </tr>
