@@ -23,4 +23,11 @@
     {{ variation.amount|absolute }}
   </td>
 {% endif %}
+
+  <td>
+    <form method="POST" action="{% url 'variation_delete' ledger.pk record.pk variation.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+    </form>
+  </td>
 </tr>
