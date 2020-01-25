@@ -1,5 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App.js";
+import Record from "./Record.js";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<Record />, document.getElementById("root"));
