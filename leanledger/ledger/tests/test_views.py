@@ -114,45 +114,6 @@ class TestRecordViews(TestCase):
         self.assertTemplateUsed(response, 'ledger/record_list.html')
         self.assertContains(response, 'expense one')
 
-    def test_record_create_get(self):
-        url = reverse('record_create', args=[self.ledger.pk])
-
-        response = self.client.get(url)
-
-        self.assertTemplateUsed(response, 'ledger/record_create.html')
-        self.assertContains(response, 'form')
-
-    def test_record_create_post(self):
-        url = reverse('record_create', args=[self.ledger.pk])
-        description = 'Record Description'
-        data = {
-            'description': description,
-            'date': '2019-10-01',
-        }
-
-        response = self.client.post(url, args=[self.ledger.pk], data=data, follow=True)
-
-        self.assertTemplateUsed(response, 'ledger/record_detail.html')
-        self.assertContains(response, description)
-
-    def test_record_delete_get(self):
-        record = Record.objects.create(date='2019-10-01', ledger=self.ledger)
-        url = reverse('record_delete', args=[self.ledger.pk, record.pk])
-
-        response = self.client.get(url)
-
-        self.assertContains(response, 'sure')
-        self.assertTemplateUsed(response, 'ledger/record_delete.html')
-        record.delete()
-
-    def test_record_delete_post(self):
-        record = Record.objects.create(date='2019-10-01', ledger=self.ledger)
-        url = reverse('record_delete', args=[self.ledger.pk, record.pk])
-
-        response = self.client.post(url)
-
-        self.assertFalse(Record.objects.filter(pk=record.pk).exists())
-
 
 class TestAccountViews(TestCase):
     @classmethod
@@ -218,36 +179,3 @@ class TestAccountViews(TestCase):
 
         self.assertTemplateUsed(response, 'ledger/account_list.html')
         self.assertFalse(Account.objects.filter(name='account').exists())
-
-
-class TestVariationViews(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_test_data(cls)
-
-    def test_get_partial(self):
-        url = reverse('variation_create', args=[self.ledger.pk, self.record.pk])
-
-        response = self.client.get(url)
-
-        self.assertTemplateUsed(response, 'ledger/variation_create.html')
-        self.assertContains(response, 'Amount')
-
-    def test_variation_delete_post(self):
-        variation = Variation.objects.create(
-            amount=10, record=self.record, account=self.account_cash)
-        args = [self.ledger.pk, self.record.pk, variation.pk]
-        url = reverse('variation_delete', args=args)
-
-        self.client.post(url)
-
-        self.assertFalse(Variation.objects.filter(pk=variation.pk).exists())
-
-    def test_variation_delete_get(self):
-        args = [self.ledger.pk, self.record.pk, self.variation_cash.pk]
-        url = reverse('variation_delete', args=args)
-
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 403)

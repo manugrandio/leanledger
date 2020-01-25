@@ -68,31 +68,7 @@ def record_list(request, ledger_pk):
 
 
 def record_create(request, ledger_pk):
-    ledger = Ledger.objects.get(pk=ledger_pk)
-    form = RecordForm(request.POST or None)
-    if form.is_valid():
-        record = form.save(commit=False)
-        record.ledger = ledger
-        record.save()
-        return redirect(reverse('record_detail', args=[ledger.pk, record.pk]))
-        # TODO handle form errors
-    return render(request, 'ledger/record_create.html', context={
-        'form': form,
-        'ledger': ledger,
-    })
-
-
-def record_delete(request, ledger_pk, record_pk):
-    ledger = Ledger.objects.get(pk=ledger_pk)
-    record = Record.objects.get(pk=record_pk)
-    if request.method == 'POST':
-        record.delete()
-        return redirect(reverse('record_list', args=[ledger_pk]))
-    return render(request, 'ledger/record_delete.html', {
-        'record': record,
-        'ledger': ledger,
-    })
-
+    pass
 
 
 def account_detail(request, ledger_pk, account_pk):
@@ -138,26 +114,3 @@ def account_delete(request, ledger_pk, account_pk):
         'ledger': ledger,
         'account': account,
     })
-
-
-def variation_create(request, ledger_pk, record_pk):
-    form = VariationForm(request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            variation = form.save(commit=False)
-            variation.record = Record.objects.get(pk=record_pk)
-            variation.save()
-            return redirect(reverse('record_detail', args=[ledger_pk, record_pk]))
-        # TODO handle form errors
-    return render(request, 'ledger/variation_create.html', {
-        'form': form,
-        'record_pk': record_pk,
-        'ledger_pk': ledger_pk
-    })
-
-
-def variation_delete(request, ledger_pk, record_pk, variation_pk):
-    if request.method != 'POST':
-        return HttpResponseForbidden('Method not allowed')
-    Variation.objects.get(pk=variation_pk).delete()
-    return redirect(reverse('record_detail', args=[ledger_pk, record_pk]))
