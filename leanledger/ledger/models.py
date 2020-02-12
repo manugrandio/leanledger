@@ -99,15 +99,11 @@ class Variation(models.Model):
 
     @property
     def type(self):
-        # TODO could it be expressed in a better way with if-else blocks?
-        account_types = {
-            (Account.ORIGIN, True): self.CREDIT,
-            (Account.ORIGIN, False): self.DEBIT,
-            (Account.DESTINATION, True): self.DEBIT,
-            (Account.DESTINATION, False): self.CREDIT,
-        }
         is_increase = self.amount > 0
-        return account_types[(self.account.type, is_increase)]
+        if self.account.type == Account.ORIGIN:
+            return self.CREDIT if is_increase else self.DEBIT
+        else:
+            return self.DEBIT if is_increase else self.CREDIT
 
     def __str__(self):
         return 'Variation({}, {}, {})'.format(
