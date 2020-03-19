@@ -12,11 +12,26 @@ class Record extends Component {
       date: "2019-12-31",
       variations: {
         debit: [
-          { id: 1, accountName: "cash", amount: 100 },
+          {
+            id: 1,
+            accountName: "cash",
+            accountURL: "http://localhost:8000/ledger/1/account/2/",
+            amount: 100
+          },
         ],
         credit: [
-          { id: 2, accountName: "expense one", amount: 50 },
-          { id: 3, accountName: "expense two", amount: 50 },
+          {
+            id: 2,
+            accountName: "expense one",
+            accountURL: "http://localhost:8000/ledger/1/account/3/",
+            amount: 50
+          },
+          {
+            id: 3,
+            accountName: "expense two",
+            accountURL: "http://localhost:8000/ledger/1/account/4/",
+            amount: 50
+          },
         ],
       },
     };
@@ -90,8 +105,8 @@ class Variation extends Component {
     return (
       <tr>
         <td scope="row">
-          <span className="{ this.props.variationType === CREDIT ? 'ml-5' : ''}">
-            { this.props.accountName }
+          <span className={ this.props.variationType === CREDIT ? 'ml-5' : '' }>
+            <a href={ this.props.accountURL }>{ this.props.accountName }</a>
           </span>
         </td>
         { this.props.variationType === DEBIT ? valueColumn : emptyColumn }
