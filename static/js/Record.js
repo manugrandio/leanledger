@@ -113,8 +113,8 @@ class Variation extends Component {
             <a href={ this.props.account_url }>{ this.props.account_name }</a>
           </span>
         </td>
-        { this.props.type === DEBIT ? valueColumn : emptyColumn }
-        { this.props.type === DEBIT ? emptyColumn : valueColumn }
+        { this.props.variationType === DEBIT ? valueColumn : emptyColumn }
+        { this.props.variationType === DEBIT ? emptyColumn : valueColumn }
       </tr>
     );
   }
