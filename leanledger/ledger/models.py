@@ -2,7 +2,9 @@ from decimal import Decimal
 from itertools import groupby
 
 from django.db import models
+from django.db.models.functions import Abs
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 from .core import DEBIT, CREDIT, record_is_balanced
 
@@ -53,6 +55,9 @@ class Account(models.Model):
     def full_name(self):
         return ' / '.join(account.name for account in self.get_breadcrumbs())
 
+    def get_absolute_url(self):
+        return reverse("account_detail", args=[self.ledger.pk, self.pk])
+
     def __str__(self):
         return '{}: {} ({})'.format(self.type, self.name, self.total)
 
@@ -72,10 +77,22 @@ class Record(models.Model):
 
     def variations_by_type(self):
         get_type = lambda variation: variation.type
-        variations = list(self.variations.all())
+        variations = list(self.variations.all().order_by(Abs("amount").desc(), "pk"))
         variations.sort(key=get_type)
         grouped = groupby(variations, get_type)
         return {type_: list(variations) for type_, variations in grouped}
+
+    def as_dict(self):
+        variations = self.variations_by_type()
+        return {
+            "id": self.pk,
+            "is_balanced": self.is_balanced(),
+            "date": self.date.strftime("%Y-%m-%d"),
+            "variations": {
+                "debit": [variation.as_dict() for variation in variations[Variation.DEBIT]],
+                "credit": [variation.as_dict() for variation in variations[Variation.CREDIT]],
+            },
+        }
 
     is_balanced = record_is_balanced
 
@@ -104,6 +121,14 @@ class Variation(models.Model):
             return self.CREDIT if is_increase else self.DEBIT
         else:
             return self.DEBIT if is_increase else self.CREDIT
+
+    def as_dict(self):
+        return {
+            "id": self.pk,
+            "account_name": self.account.name,
+            "account_url": self.account.get_absolute_url(),
+            "amount": abs(float(self.amount)),
+        }
 
     def __str__(self):
         return 'Variation({}, {}, {})'.format(

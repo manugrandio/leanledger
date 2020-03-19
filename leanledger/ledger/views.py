@@ -2,7 +2,7 @@ import json
 from collections import namedtuple
 
 from django.contrib.auth.models import AnonymousUser, User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 
@@ -58,6 +58,10 @@ def record_detail(request, ledger_pk, record_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     record = Record.objects.get(pk=record_pk)  # TODO replace for get_or_404
     return render(request, 'ledger/record_detail.html', {'record': record, 'ledger': ledger})
+
+
+def record_detail_json(request, ledger_pk, record_pk):
+    return JsonResponse(Record.objects.get(pk=record_pk).as_dict())
 
 
 def record_list(request, ledger_pk):

@@ -20,9 +20,9 @@ def set_up_class(test_case):
     test_case.variation_cash = Variation.objects.create(
         amount=-100, record=test_case.record, account=test_case.account_cash)
     test_case.variation_expense_one = Variation.objects.create(
-        amount=-50, record=test_case.record, account=test_case.account_expense_one)
+        amount=-40, record=test_case.record, account=test_case.account_expense_one)
     test_case.variation_expense_two = Variation.objects.create(
-        amount=-50, record=test_case.record, account=test_case.account_expense_two)
+        amount=-60, record=test_case.record, account=test_case.account_expense_two)
 
 
 def tear_down_class(test_case):
@@ -109,13 +109,47 @@ class TestRecord(TestCase):
 
         self.assertEqual(variations_by_type, {
             Variation.DEBIT: [
-                self.variation_expense_one,
                 self.variation_expense_two,
+                self.variation_expense_one,
             ],
             Variation.CREDIT: [
                 self.variation_cash,
             ],
         })
+
+    def test_as_dict(self):
+        record_dict = self.record.as_dict()
+
+        expected = {
+            "id": 1,
+            "is_balanced": True,
+            "date": "2019-09-14",
+            "variations": {
+                "debit": [
+                    {
+                        "id": 3,
+                        "account_name": "expense two",
+                        "account_url": "/ledger/1/account/3/",
+                        "amount": 60,
+                    },
+                    {
+                        "id": 2,
+                        "account_name": "expense one",
+                        "account_url": "/ledger/1/account/2/",
+                        "amount": 40,
+                    },
+                ],
+                "credit": [
+                    {
+                        "id": 1,
+                        "account_name": "cash",
+                        "account_url": "/ledger/1/account/1/",
+                        "amount": 100
+                    },
+                ],
+            },
+        }
+        self.assertEqual(record_dict, expected)
 
 
 class TestVariation(TestCase):

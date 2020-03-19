@@ -114,6 +114,30 @@ class TestRecordViews(TestCase):
         self.assertTemplateUsed(response, 'ledger/record_list.html')
         self.assertContains(response, 'expense one')
 
+    def test_record_detail_json(self):
+        url = reverse('record_detail_json', args=[self.ledger.pk, self.record.pk])
+
+        response = self.client.get(url)
+
+        expected = {
+            "date": "2019-09-14",
+            "id": 1,
+            "is_balanced": True,
+            "variations": {"credit": [{"account_name": "cash",
+                                       "account_url": "/ledger/1/account/1/",
+                                       "amount": 100.0,
+                                       "id": 1}],
+                           "debit": [{"account_name": "expense two",
+                                      "account_url": "/ledger/1/account/3/",
+                                      "amount": 60.0,
+                                      "id": 3},
+                                     {"account_name": "expense one",
+                                      "account_url": "/ledger/1/account/2/",
+                                      "amount": 40.0,
+                                      "id": 2}]}
+        }
+        self.assertEqual(json.loads(response.content), expected)
+
 
 class TestAccountViews(TestCase):
     @classmethod
