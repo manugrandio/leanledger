@@ -9,10 +9,10 @@ class Record extends Component {
   constructor(props) {
     super(props);
     this.accounts = [
-      {value: 1, type: "D", name: "cash"},
-      {value: 2, type: "O", name: "expense one"},
-      {value: 3, type: "O", name: "expense two"},
-      {value: 4, type: "D", name: "lent"},
+      {id: 1, type: "D", name: "cash", url: ""},
+      {id: 2, type: "O", name: "expense one", url: ""},
+      {id: 3, type: "O", name: "expense two", url: ""},
+      {id: 4, type: "D", name: "lent", url: ""},
     ];
     this.state = {record: null, editMode: false};
     this.getRecord();
@@ -56,8 +56,21 @@ class Record extends Component {
     this.setState({ record: record });
   }
 
+  addVariation(e, variationType) {
+    e.preventDefault();
+    let record = this.state.record, variations = record.variations[variationType];
+    let newId = Math.max(...variations.map((variation) => variation.id)) + 1;
+    record.variations[variationType].push({
+      id: newId,
+      amount: "",
+      account_id: this.accounts[0].id,
+      account_name: this.accounts[0].name,
+      account_url: this.accounts[0].url,
+    });
+    this.setState({ record: record });
+  }
+
   deleteVariation(variationType, variationID) {
-    console.log(variationType);
     let record = this.state.record, variations = record.variations[variationType];
     record.variations[variationType] = variations.filter((variation) => variation.id !== variationID);
     this.setState({ record: record });
@@ -78,6 +91,7 @@ class Record extends Component {
           <RecordBody
             {...this.state.record}
             accounts={ this.accounts }
+            addVariation={ (e, variationType) => this.addVariation(e, variationType) }
             deleteVariation={ (variationType, variationID) => this.deleteVariation(variationType, variationID) }
             editMode={ this.state.editMode }
             finishUpdate={ () => this.finishUpdate() }
@@ -108,7 +122,7 @@ class RecordHeader extends Component {
             <input
               type="text"
               placeholder="Date"
-              className="form-control"
+              className="form-control form-control-sm"
               value={ this.props.date }
               onChange={ (e) => this.props.onChange("date", e) }
             />
@@ -117,7 +131,7 @@ class RecordHeader extends Component {
             <input
               type="text"
               placeholder="Description"
-              className="form-control"
+              className="form-control form-control-sm"
               value={ this.props.description }
               onChange={ (e) => this.props.onChange("description", e) }
             />
@@ -175,7 +189,7 @@ class RecordBody extends Component {
       />
     ));
 
-    let finishUpdateBtn = null;
+    let finishUpdateBtn = null, addDebitVariationBtn = null, addCreditVariationBtn = null;
     if (this.props.editMode) {
       finishUpdateBtn = (
         <button
@@ -185,6 +199,26 @@ class RecordBody extends Component {
           Done
         </button>
       );
+      addDebitVariationBtn = (
+        <>
+          <tr>
+            <td></td>
+            <td>
+              <a href="" onClick={ (e) => this.props.addVariation(e, DEBIT) }><small>Add</small></a>
+            </td>
+          </tr>
+        </>
+      );
+      addCreditVariationBtn = (
+        <>
+          <tr>
+            <td></td>
+            <td>
+              <a href="" onClick={ (e) => this.props.addVariation(e, CREDIT) }><small>Add</small></a>
+            </td>
+          </tr>
+        </>
+      );
     }
 
     return (
@@ -192,7 +226,9 @@ class RecordBody extends Component {
         <table className="table table-borderless table-sm mb-0">
           <tbody>
             { debitVariations }
+            { addDebitVariationBtn }
             { creditVariations }
+            { addCreditVariationBtn }
           </tbody>
         </table>
         { finishUpdateBtn }
@@ -211,7 +247,9 @@ class Variation extends Component {
       </td>
     );
 
-    let deleteColumn = null;
+    let accountColumn,
+      accountColumnClass = this.props.variationType === CREDIT ? "ml-5" : "",
+      deleteColumn = null;
     if (this.props.editMode) {
       deleteColumn = (
         <td style={{ width: "1em" }}>
@@ -224,14 +262,26 @@ class Variation extends Component {
           </span>
         </td>
       );
+      const accountColumnOptions = this.props.accounts.map((account) => (
+        <option key={ account.id } value={ account.id }>{ account.type }: { account.name }</option>
+      ));
+      accountColumn = (
+        <select style={{ width: "70%" }} className={ "form-control form-control-sm " + accountColumnClass } onChange={ () => null }>
+          { accountColumnOptions }
+        </select>
+      );
+    } else {
+      accountColumn = (
+        <span className={ accountColumnClass }>
+          <a href={ this.props.account_url }>{ this.props.account_name }</a>
+        </span>
+      );
     }
     return (
       <tr>
         { deleteColumn }
         <td scope="row">
-          <span className={ this.props.variationType === CREDIT ? 'ml-5' : '' }>
-            <a href={ this.props.account_url }>{ this.props.account_name }</a>
-          </span>
+          { accountColumn }
         </td>
         { this.props.variationType === DEBIT ? valueColumn : emptyColumn }
         { this.props.variationType === DEBIT ? emptyColumn : valueColumn }
