@@ -8,6 +8,12 @@ const CREDIT = "credit";
 class Record extends Component {
   constructor(props) {
     super(props);
+    this.accounts = [
+      {value: 1, type: "D", name: "cash"},
+      {value: 2, type: "O", name: "expense one"},
+      {value: 3, type: "O", name: "expense two"},
+      {value: 4, type: "D", name: "lent"},
+    ];
     this.state = {record: null, editMode: false};
     this.getRecord();
   }
@@ -50,6 +56,13 @@ class Record extends Component {
     this.setState({ record: record });
   }
 
+  deleteVariation(variationType, variationID) {
+    console.log(variationType);
+    let record = this.state.record, variations = record.variations[variationType];
+    record.variations[variationType] = variations.filter((variation) => variation.id !== variationID);
+    this.setState({ record: record });
+  }
+
   render() {
     if (this.state.record === null) {
       return <p className="mt-3">Loading…</p>;
@@ -64,6 +77,8 @@ class Record extends Component {
           />
           <RecordBody
             {...this.state.record}
+            accounts={ this.accounts }
+            deleteVariation={ (variationType, variationID) => this.deleteVariation(variationType, variationID) }
             editMode={ this.state.editMode }
             finishUpdate={ () => this.finishUpdate() }
           />
@@ -143,6 +158,9 @@ class RecordBody extends Component {
       <Variation
         key={ variation.id }
         variationType={ DEBIT }
+        deleteVariation={ (variationType, variationID) => this.props.deleteVariation(variationType, variationID) }
+        editMode={ this.props.editMode }
+        accounts={ this.props.accounts }
         {...variation}
       />
     ));
@@ -150,6 +168,9 @@ class RecordBody extends Component {
       <Variation
         key={ variation.id }
         variationType={ CREDIT }
+        deleteVariation={ (variationType, variationID) => this.props.deleteVariation(variationType, variationID) }
+        editMode={ this.props.editMode }
+        accounts={ this.props.accounts }
         {...variation}
       />
     ));
@@ -189,8 +210,24 @@ class Variation extends Component {
         <span className="float-right">{ this.props.amount }</span>
       </td>
     );
+
+    let deleteColumn = null;
+    if (this.props.editMode) {
+      deleteColumn = (
+        <td style={{ width: "1em" }}>
+          <span
+            className="text-danger"
+            style={{ cursor: "pointer" }}
+            onClick={ () => this.props.deleteVariation(this.props.variationType, this.props.id) }
+          >
+            ✗
+          </span>
+        </td>
+      );
+    }
     return (
       <tr>
+        { deleteColumn }
         <td scope="row">
           <span className={ this.props.variationType === CREDIT ? 'ml-5' : '' }>
             <a href={ this.props.account_url }>{ this.props.account_name }</a>
