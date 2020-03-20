@@ -88,6 +88,7 @@ class Record(models.Model):
             "id": self.pk,
             "is_balanced": self.is_balanced(),
             "date": self.date.strftime("%Y-%m-%d"),
+            "description": self.description,
             "variations": {
                 "debit": [variation.as_dict() for variation in variations[Variation.DEBIT]],
                 "credit": [variation.as_dict() for variation in variations[Variation.CREDIT]],

@@ -8,7 +8,7 @@ const CREDIT = "credit";
 class Record extends Component {
   constructor(props) {
     super(props);
-    this.state = {record: null};
+    this.state = {record: null, editMode: false};
     this.getRecord();
   }
 
@@ -34,15 +34,49 @@ class Record extends Component {
     return currentUrl.origin + urlPath;
   }
 
+  enterEditMode(e) {
+    e.preventDefault();
+    this.setState({ editMode: true });
+  }
+
+  finishUpdate() {
+    // TODO update record to back-end
+    this.setState({ editMode: false });
+  }
+
+  onChange(field, e) {
+    let record = this.state.record;
+    record[field] = e.target.value;
+    this.setState({ record: record });
+  }
+
   render() {
     if (this.state.record === null) {
       return <p className="mt-3">Loading…</p>;
     } else {
+      const cardContent = (
+        <>
+          <RecordHeader
+            {...this.state.record}
+            onChange={ (field, e) => this.onChange(field, e) }
+            editMode={ this.state.editMode }
+            enterEditMode={ (e) => this.enterEditMode(e) }
+          />
+          <RecordBody
+            {...this.state.record}
+            editMode={ this.state.editMode }
+            finishUpdate={ () => this.finishUpdate() }
+          />
+        </>
+      );
+      let card;
+      if (this.state.editMode) {
+        card = <form>{ cardContent }</form>;
+      } else {
+        card = cardContent;
+      }
       return (
-        <div className="card mt-3 shadow-sm">
-          <RecordHeader {...this.state.record}/>
-          <RecordBody {...this.state.record}/>
-        </div>
+        <div className="card mt-3 shadow-sm">{ card }</div>
       );
     }
   }
@@ -51,17 +85,52 @@ class Record extends Component {
 
 class RecordHeader extends Component {
   render() {
-    let balancedState;
-    if (this.props.is_balanced) {
-      balancedState = <span className="float-right badge badge-success align-bottom">ok</span>;
+    let headerContent;
+    if (this.props.editMode) {
+      headerContent = (
+        <div className="form-row">
+          <div className="col">
+            <input
+              type="text"
+              placeholder="Date"
+              className="form-control"
+              value={ this.props.date }
+              onChange={ (e) => this.props.onChange("date", e) }
+            />
+          </div>
+          <div className="col">
+            <input
+              type="text"
+              placeholder="Description"
+              className="form-control"
+              value={ this.props.description }
+              onChange={ (e) => this.props.onChange("description", e) }
+            />
+          </div>
+        </div>
+      )
     } else {
-      balancedState = <span className="float-right badge badge-danger">unbalanced</span>;
+      let balancedState;
+      if (this.props.is_balanced) {
+        balancedState = <span className="float-right badge badge-success align-bottom">ok</span>;
+      } else {
+        balancedState = <span className="float-right badge badge-danger">unbalanced</span>;
+      }
+      headerContent = (
+        <>
+          <strong>{ this.props.date }</strong>
+          <em className="ml-2">{ this.props.description }</em>
+          <a href="" className="ml-2" onClick={ (e) => this.props.enterEditMode(e) }>
+            <small>Edit</small>
+          </a>
+          { balancedState }
+        </>
+      );
     }
+
     return (
       <div className="card-header">
-        <strong>{ this.props.date }</strong>
-        <em className="mr-3 float-right">{ this.props.description }</em>
-        { balancedState }
+        { headerContent }
       </div>
     );
   }
@@ -84,6 +153,19 @@ class RecordBody extends Component {
         {...variation}
       />
     ));
+
+    let finishUpdateBtn = null;
+    if (this.props.editMode) {
+      finishUpdateBtn = (
+        <button
+          className="btn btn-primary mt-3"
+          onClick={ () => this.props.finishUpdate() }
+        >
+          Done
+        </button>
+      );
+    }
+
     return (
       <div className="card-body">
         <table className="table table-borderless table-sm mb-0">
@@ -92,6 +174,7 @@ class RecordBody extends Component {
             { creditVariations }
           </tbody>
         </table>
+        { finishUpdateBtn }
       </div>
     );
   }

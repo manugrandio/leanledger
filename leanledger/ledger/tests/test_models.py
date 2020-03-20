@@ -124,6 +124,7 @@ class TestRecord(TestCase):
             "id": 1,
             "is_balanced": True,
             "date": "2019-09-14",
+            "description": "",
             "variations": {
                 "debit": [
                     {
