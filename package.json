@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/manugrandio/leanledger.git"
+    "url": "git+ssh://git@github.com:manugrandio/leanledger.git"
   },
   "author": "manugrandio@fastmail.fm",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/manugrandio/leanledger/issues"
+    "url": "https://github.com/manugrandio/leanledger/issues"
   },
   "homepage": "https://gitlab.com/manugrandio/leanledger#readme",
   "devDependencies": {
