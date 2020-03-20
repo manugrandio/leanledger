@@ -36,7 +36,7 @@ class Record extends Component {
 
   render() {
     if (this.state.record === null) {
-      return <p className="mt-3">Loading...</p>;
+      return <p className="mt-3">Loading…</p>;
     } else {
       return (
         <div className="card mt-3 shadow-sm">
