@@ -67,6 +67,7 @@ class Account(models.Model):
             "id": self.pk,
             "name": self.full_name,
             "type": self.type,
+            "url": self.get_absolute_url(),
         }
 
     def __str__(self):

@@ -100,9 +100,10 @@ class TestAccount(TestCase):
         account_dict = self.cash.as_dict()
 
         self.assertEqual(account_dict, {
-            "id": 1,
+            "id": self.cash.pk,
             "name": "cash",
             "type": "D",
+            "url": self.cash.get_absolute_url(),
         })
 
 
