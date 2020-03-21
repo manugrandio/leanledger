@@ -92,6 +92,10 @@ def account_list(request, ledger_pk):
     })
 
 
+def account_list_json(request, ledger_pk):
+    return JsonResponse(Account.objects.all_as_dict(ledger_pk), safe=False)
+
+
 def account_create(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     parent = request.GET.get('parent')

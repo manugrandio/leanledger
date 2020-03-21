@@ -166,6 +166,19 @@ class TestAccountViews(TestCase):
 
         self.assertTemplateUsed(response, 'ledger/account_list.html')
 
+    def test_account_list_json(self):
+        url = reverse("account_list_json", args=[self.ledger.pk])
+
+        response = self.client.get(url)
+
+        expected = [
+            {"id": self.account_cash.pk, "name": "cash", "type": "D"},
+            {"id": self.account_wallet.pk, "name": "cash / wallet", "type": "D"},
+            {"id": self.account_bank_one.pk, "name": "cash / wallet / bank one", "type": "D"},
+            {"id": self.account_bank_two.pk, "name": "cash / wallet / bank two", "type": "D"},
+        ]
+        self.assertEqual(json.loads(response.content), expected)
+
     def test_account_get_create(self):
         response = self.client.get(reverse('account_create', args=[self.ledger.pk]))
 

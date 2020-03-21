@@ -96,6 +96,15 @@ class TestAccount(TestCase):
     def test_full_name(self):
         self.assertEqual(self.bank_two_sub.full_name, 'cash / bank two / sub bank two')
 
+    def test_as_dict(self):
+        account_dict = self.cash.as_dict()
+
+        self.assertEqual(account_dict, {
+            "id": 1,
+            "name": "cash",
+            "type": "D",
+        })
+
 
 class TestRecord(TestCase):
     setUpClass = classmethod(set_up_class)
@@ -121,30 +130,30 @@ class TestRecord(TestCase):
         record_dict = self.record.as_dict()
 
         expected = {
-            "id": 1,
+            "id": self.record.pk,
             "is_balanced": True,
             "date": "2019-09-14",
             "description": "",
             "variations": {
                 "debit": [
                     {
-                        "id": 3,
+                        "id": self.variation_expense_two.pk,
                         "account_name": "expense two",
-                        "account_url": "/ledger/1/account/3/",
+                        "account_url": self.account_expense_two.get_absolute_url(),
                         "amount": 60,
                     },
                     {
-                        "id": 2,
+                        "id": self.variation_expense_one.pk,
                         "account_name": "expense one",
-                        "account_url": "/ledger/1/account/2/",
+                        "account_url": self.account_expense_one.get_absolute_url(),
                         "amount": 40,
                     },
                 ],
                 "credit": [
                     {
-                        "id": 1,
+                        "id": self.variation_cash.pk,
                         "account_name": "cash",
-                        "account_url": "/ledger/1/account/1/",
+                        "account_url": self.account_cash.get_absolute_url(),
                         "amount": 100
                     },
                 ],

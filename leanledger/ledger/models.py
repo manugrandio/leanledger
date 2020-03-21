@@ -21,6 +21,9 @@ class AccountManager(models.Manager):
     def origin_accounts(self, ledger_pk):
         return self.filter(parent=None, type=Account.ORIGIN, ledger=ledger_pk)
 
+    def all_as_dict(self, ledger_pk):
+        return [account.as_dict() for account in self.filter(ledger=ledger_pk)]
+
 
 class Account(models.Model):
     ORIGIN = 'O'
@@ -40,6 +43,7 @@ class Account(models.Model):
     # TODO enforce uniqueness of: name + parent
     # TODO enforce: children must be the same type as parent
     # TODO enforce: accounts with children don't have own variations
+    #      - When adding children, move existing variations to a default "other" child account
 
     @property
     def total(self):
@@ -57,6 +61,13 @@ class Account(models.Model):
 
     def get_absolute_url(self):
         return reverse("account_detail", args=[self.ledger.pk, self.pk])
+
+    def as_dict(self):
+        return {
+            "id": self.pk,
+            "name": self.full_name,
+            "type": self.type,
+        }
 
     def __str__(self):
         return '{}: {} ({})'.format(self.type, self.name, self.total)

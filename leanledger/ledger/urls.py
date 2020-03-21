@@ -4,6 +4,7 @@ from .views import (
     ledger_list, ledger_create, ledger_update, ledger_delete,
     record_detail, record_detail_json, record_list, record_create,
     account_detail, account_create, account_delete, account_list,
+    account_list_json,
 )
 
 
@@ -26,6 +27,7 @@ urlpatterns = [
 
     # Account
     path('<int:ledger_pk>/account/', account_list, name='account_list'),
+    path('<int:ledger_pk>/account.json', account_list_json, name='account_list_json'),
     path('<int:ledger_pk>/account/create/', account_create, name='account_create'),
     path('<int:ledger_pk>/account/<int:account_pk>/', account_detail, name='account_detail'),
     path('<int:ledger_pk>/account/<int:account_pk>/delete/', account_delete, name='account_delete'),
