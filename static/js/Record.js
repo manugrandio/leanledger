@@ -8,20 +8,14 @@ const CREDIT = "credit";
 class Record extends Component {
   constructor(props) {
     super(props);
-    this.accounts = [
-      {id: 1, type: "D", name: "cash", url: ""},
-      {id: 2, type: "O", name: "expense one", url: ""},
-      {id: 3, type: "O", name: "expense two", url: ""},
-      {id: 4, type: "D", name: "lent", url: ""},
-    ];
-    this.state = {record: null, editMode: false};
+    this.state = {record: null, editMode: false, accounts: null};
     this.getRecord();
   }
 
   getRecord() {
     const self = this;
     const recordUrl = this.getRecordUrl();
-    return fetch(recordUrl)
+    fetch(recordUrl)
       .then((response) => {
         return response.json();
       })
@@ -31,18 +25,34 @@ class Record extends Component {
   }
 
   getRecordUrl() {
+    const { origin, ledgerId, recordId } = this.getUrlParts();
+    const urlPath = `/ledger/${ledgerId}/record/${recordId}.json`;
+    return origin + urlPath;
+  }
+
+  getUrlParts() {
     // TODO clean
     const currentUrl = new URL(window.location.href);
     const pathUrlParts = currentUrl.pathname.split("/");
-    const ledgerId = pathUrlParts[2];
-    const recordId = pathUrlParts[pathUrlParts.length - 2];
-    const urlPath = `/ledger/${ledgerId}/record/${recordId}.json`;
-    return currentUrl.origin + urlPath;
+    return {
+      ledgerId: pathUrlParts[2],
+      recordId: pathUrlParts[pathUrlParts.length - 2],
+      origin: currentUrl.origin,
+    };
   }
 
   enterEditMode(e) {
     e.preventDefault();
-    this.setState({ editMode: true });
+    const { origin, ledgerId } = this.getUrlParts();
+    const urlPath = `/ledger/${ledgerId}/account.json`;
+    const accountsUrl = origin + urlPath;
+    fetch(accountsUrl)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({ editMode: true, accounts: data });
+      });
   }
 
   finishUpdate() {
@@ -63,9 +73,9 @@ class Record extends Component {
     record.variations[variationType].push({
       id: newId,
       amount: "",
-      account_id: this.accounts[0].id,
-      account_name: this.accounts[0].name,
-      account_url: this.accounts[0].url,
+      account_id: this.state.accounts[0].id,
+      account_name: this.state.accounts[0].name,
+      account_url: this.state.accounts[0].url,
     });
     this.setState({ record: record });
   }
@@ -90,7 +100,7 @@ class Record extends Component {
           />
           <RecordBody
             {...this.state.record}
-            accounts={ this.accounts }
+            accounts={ this.state.accounts }
             addVariation={ (e, variationType) => this.addVariation(e, variationType) }
             deleteVariation={ (variationType, variationID) => this.deleteVariation(variationType, variationID) }
             editMode={ this.state.editMode }
