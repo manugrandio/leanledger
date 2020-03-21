@@ -65,7 +65,8 @@ class Account(models.Model):
     def as_dict(self):
         return {
             "id": self.pk,
-            "name": self.full_name,
+            "name": self.name,
+            "full_name": self.full_name,
             "type": self.type,
             "url": self.get_absolute_url(),
         }
@@ -138,6 +139,7 @@ class Variation(models.Model):
     def as_dict(self):
         return {
             "id": self.pk,
+            "account_id": self.account.pk,
             "account_name": self.account.name,
             "account_url": self.account.get_absolute_url(),
             "amount": abs(float(self.amount)),

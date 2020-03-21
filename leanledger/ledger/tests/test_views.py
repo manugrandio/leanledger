@@ -126,14 +126,17 @@ class TestRecordViews(TestCase):
             "description": "",
             "variations": {"credit": [{"account_name": "cash",
                                        "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
                                        "amount": 100.0,
                                        "id": 1}],
                            "debit": [{"account_name": "expense two",
                                       "account_url": self.account_expense_two.get_absolute_url(),
+                                      "account_id": self.account_expense_two.pk,
                                       "amount": 60.0,
                                       "id": 3},
                                      {"account_name": "expense one",
                                       "account_url": self.account_expense_one.get_absolute_url(),
+                                      "account_id": self.account_expense_one.pk,
                                       "amount": 40.0,
                                       "id": 2}]}
         }
@@ -173,10 +176,34 @@ class TestAccountViews(TestCase):
         response = self.client.get(url)
 
         expected = [
-            {"id": self.account_cash.pk, "name": "cash", "type": "D", "url": self.account_cash.get_absolute_url()},
-            {"id": self.account_wallet.pk, "name": "cash / wallet", "type": "D", "url": self.account_wallet.get_absolute_url()},
-            {"id": self.account_bank_one.pk, "name": "cash / wallet / bank one", "type": "D", "url": self.account_bank_one.get_absolute_url()},
-            {"id": self.account_bank_two.pk, "name": "cash / wallet / bank two", "type": "D", "url": self.account_bank_two.get_absolute_url()},
+            {
+                "id": self.account_cash.pk,
+                "name": "cash",
+                "full_name": "cash",
+                "type": "D",
+                "url": self.account_cash.get_absolute_url()
+            },
+            {
+                "id": self.account_wallet.pk,
+                "name": "wallet",
+                "full_name": "cash / wallet",
+                "type": "D",
+                "url": self.account_wallet.get_absolute_url(),
+            },
+            {
+                "id": self.account_bank_one.pk,
+                "name": "bank one",
+                "full_name": "cash / wallet / bank one",
+                "type": "D",
+                "url": self.account_bank_one.get_absolute_url(),
+            },
+            {
+                "id": self.account_bank_two.pk,
+                "name": "bank two",
+                "full_name": "cash / wallet / bank two",
+                "type": "D",
+                "url": self.account_bank_two.get_absolute_url(),
+            },
         ]
         self.assertEqual(json.loads(response.content), expected)
 

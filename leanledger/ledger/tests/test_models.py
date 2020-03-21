@@ -102,6 +102,7 @@ class TestAccount(TestCase):
         self.assertEqual(account_dict, {
             "id": self.cash.pk,
             "name": "cash",
+            "full_name": "cash",
             "type": "D",
             "url": self.cash.get_absolute_url(),
         })
@@ -139,12 +140,14 @@ class TestRecord(TestCase):
                 "debit": [
                     {
                         "id": self.variation_expense_two.pk,
+                        "account_id": self.account_expense_two.pk,
                         "account_name": "expense two",
                         "account_url": self.account_expense_two.get_absolute_url(),
                         "amount": 60,
                     },
                     {
                         "id": self.variation_expense_one.pk,
+                        "account_id": self.account_expense_one.pk,
                         "account_name": "expense one",
                         "account_url": self.account_expense_one.get_absolute_url(),
                         "amount": 40,
@@ -153,6 +156,7 @@ class TestRecord(TestCase):
                 "credit": [
                     {
                         "id": self.variation_cash.pk,
+                        "account_id": self.account_cash.pk,
                         "account_name": "cash",
                         "account_url": self.account_cash.get_absolute_url(),
                         "amount": 100

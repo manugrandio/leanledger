@@ -86,6 +86,18 @@ class Record extends Component {
     this.setState({ record: record });
   }
 
+  changeVariationAccount(e, variationType, variationId) {
+    const accountId = parseInt(e.target.value);
+    let record = this.state.record,
+      variations = record.variations[variationType],
+      originalVariation = variations.filter((variation) => variation.id === variationId)[0],
+      account = this.state.accounts.filter((account) => account.id === accountId)[0];
+    originalVariation.account_id = account.id;
+    originalVariation.account_name = account.name;
+    originalVariation.account_url = account.url;
+    this.setState({ record: record });
+  }
+
   render() {
     if (this.state.record === null) {
       return <p className="mt-3">Loading…</p>;
@@ -103,6 +115,7 @@ class Record extends Component {
             accounts={ this.state.accounts }
             addVariation={ (e, variationType) => this.addVariation(e, variationType) }
             deleteVariation={ (variationType, variationID) => this.deleteVariation(variationType, variationID) }
+            changeVariationAccount={ (e, variationType, variationId) => this.changeVariationAccount(e, variationType, variationId) }
             editMode={ this.state.editMode }
             finishUpdate={ () => this.finishUpdate() }
           />
@@ -177,27 +190,28 @@ class RecordHeader extends Component {
 
 
 class RecordBody extends Component {
+  getVariationsList(variationType) {
+    return this.props.variations[variationType].map((variation) => (
+        <Variation
+          key={ variation.id }
+          variationType={ variationType }
+          deleteVariation={ (variationType, variationID) => this.props.deleteVariation(variationType, variationID) }
+          changeVariationAccount={
+            (e, variationType, variationId) => {
+              this.props.changeVariationAccount(e, variationType, variationId)
+            }
+          }
+          editMode={ this.props.editMode }
+          accounts={ this.props.accounts }
+          {...variation}
+        />
+      )
+    );
+  }
+
   render() {
-    const debitVariations = this.props.variations.debit.map((variation) => (
-      <Variation
-        key={ variation.id }
-        variationType={ DEBIT }
-        deleteVariation={ (variationType, variationID) => this.props.deleteVariation(variationType, variationID) }
-        editMode={ this.props.editMode }
-        accounts={ this.props.accounts }
-        {...variation}
-      />
-    ));
-    const creditVariations = this.props.variations.credit.map((variation) => (
-      <Variation
-        key={ variation.id }
-        variationType={ CREDIT }
-        deleteVariation={ (variationType, variationID) => this.props.deleteVariation(variationType, variationID) }
-        editMode={ this.props.editMode }
-        accounts={ this.props.accounts }
-        {...variation}
-      />
-    ));
+    const debitVariations = this.getVariationsList(DEBIT);
+    const creditVariations = this.getVariationsList(CREDIT);
 
     let finishUpdateBtn = null, addDebitVariationBtn = null, addCreditVariationBtn = null;
     if (this.props.editMode) {
@@ -273,10 +287,17 @@ class Variation extends Component {
         </td>
       );
       const accountColumnOptions = this.props.accounts.map((account) => (
-        <option key={ account.id } value={ account.id }>{ account.type }: { account.name }</option>
+        <option key={ account.id } value={ account.id }>
+          { account.type }: { account.full_name }
+        </option>
       ));
       accountColumn = (
-        <select style={{ width: "70%" }} className={ "form-control form-control-sm " + accountColumnClass } onChange={ () => null }>
+        <select
+          style={{ width: "70%" }}
+          className={ "form-control form-control-sm " + accountColumnClass } onChange={ () => null }
+          onChange={ (e) => this.props.changeVariationAccount(e, this.props.variationType, this.props.id) }
+          value={ this.props.account_id.toString() }
+        >
           { accountColumnOptions }
         </select>
       );
