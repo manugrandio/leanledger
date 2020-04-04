@@ -87,6 +87,7 @@ class Record extends Component {
   }
 
   changeVariationAccount(e, variationType, variationId) {
+    // TODO change variations to be an object instead of a dict
     const accountId = parseInt(e.target.value);
     let record = this.state.record,
       variations = record.variations[variationType],
@@ -95,6 +96,14 @@ class Record extends Component {
     originalVariation.account_id = account.id;
     originalVariation.account_name = account.name;
     originalVariation.account_url = account.url;
+    this.setState({ record: record });
+  }
+
+  changeVariationAmount(e, variationType, variationId) {
+    let record = this.state.record,
+      variations = record.variations[variationType],
+      originalVariation = variations.filter((variation) => variation.id === variationId)[0];
+    originalVariation.amount = parseInt(e.target.value);
     this.setState({ record: record });
   }
 
@@ -116,6 +125,7 @@ class Record extends Component {
             addVariation={ (e, variationType) => this.addVariation(e, variationType) }
             deleteVariation={ (variationType, variationID) => this.deleteVariation(variationType, variationID) }
             changeVariationAccount={ (e, variationType, variationId) => this.changeVariationAccount(e, variationType, variationId) }
+            changeVariationAmount={ (e, variationType, variationId) => this.changeVariationAmount(e, variationType, variationId) }
             editMode={ this.state.editMode }
             finishUpdate={ () => this.finishUpdate() }
           />
@@ -201,6 +211,11 @@ class RecordBody extends Component {
               this.props.changeVariationAccount(e, variationType, variationId)
             }
           }
+          changeVariationAmount={
+            (e, variationType, variationId) => {
+              this.props.changeVariationAmount(e, variationType, variationId)
+            }
+          }
           editMode={ this.props.editMode }
           accounts={ this.props.accounts }
           {...variation}
@@ -265,11 +280,7 @@ class RecordBody extends Component {
 class Variation extends Component {
   render() {
     const emptyColumn = <td></td>;
-    const valueColumn = (
-      <td>
-        <span className="float-right">{ this.props.amount }</span>
-      </td>
-    );
+    let valueColumn;
 
     let accountColumn,
       accountColumnClass = this.props.variationType === CREDIT ? "ml-5" : "",
@@ -301,11 +312,26 @@ class Variation extends Component {
           { accountColumnOptions }
         </select>
       );
+      valueColumn = (
+        <td>
+          <input
+            type="text"
+            className="form-control form-control-sm"
+            value={ this.props.amount }
+            onChange={ (e) => this.props.changeVariationAmount(e, this.props.variationType, this.props.id) }
+          />
+        </td>
+      );
     } else {
       accountColumn = (
         <span className={ accountColumnClass }>
           <a href={ this.props.account_url }>{ this.props.account_name }</a>
         </span>
+      );
+      valueColumn = (
+        <td>
+          <span className="float-right">{ this.props.amount }</span>
+        </td>
       );
     }
     return (
