@@ -82,6 +82,8 @@ def create_test_data(test):
     test.record = Record.objects.create(date=date(2019, 9, 14), ledger=test.ledger)
     test.account_cash = Account.objects.create(
         name='cash', type=Account.DESTINATION, ledger=test.ledger)
+    test.account_bank = Account.objects.create(
+        name="bank", type=Account.DESTINATION, ledger=test.ledger)
     test.account_expense_one = Account.objects.create(
         name='expense one', type=Account.ORIGIN, ledger=test.ledger)
     test.account_expense_two = Account.objects.create(
@@ -95,16 +97,8 @@ def create_test_data(test):
 
 
 class TestRecordViews(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        create_test_data(cls)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.user.delete()
-        cls.ledger.delete()
-        super().tearDownClass()
+    def setUp(self):
+        create_test_data(self)
 
     def test_records_page(self):
         url = reverse('record_list', args=[self.ledger.pk])
@@ -141,6 +135,40 @@ class TestRecordViews(TestCase):
                                       "id": 2}]}
         }
         self.assertEqual(json.loads(response.content), expected)
+
+    def test_record_update_json_add_new_variation(self):
+        url = reverse("record_update_json", args=[self.ledger.pk, self.record.pk])
+        new_record_state = {
+            "date": "2019-09-14",
+            "id": 1,
+            "is_balanced": True,
+            "description": "",
+            "variations": {"credit": [{"account_name": "cash",
+                                       "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
+                                       "amount": 100.0,
+                                       "id": 1},
+                                      {"account_name": "bank",
+                                       "account_url": self.account_bank.get_absolute_url(),
+                                       "account_id": self.account_bank.pk,
+                                       "amount": 50.0,
+                                       "id": 4}],
+                           "debit": [{"account_name": "expense two",
+                                      "account_url": self.account_expense_two.get_absolute_url(),
+                                      "account_id": self.account_expense_two.pk,
+                                      "amount": 60.0,
+                                      "id": 3},
+                                     {"account_name": "expense one",
+                                      "account_url": self.account_expense_one.get_absolute_url(),
+                                      "account_id": self.account_expense_one.pk,
+                                      "amount": 40.0,
+                                      "id": 2}]}
+        }
+
+        response = self.client.put(url, new_record_state, content_type="application/json")
+
+        # Simple sanity check
+        self.assertIn("variations", json.loads(response.content))
 
 
 class TestAccountViews(TestCase):

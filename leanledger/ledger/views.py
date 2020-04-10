@@ -64,6 +64,12 @@ def record_detail_json(request, ledger_pk, record_pk):
     return JsonResponse(Record.objects.get(pk=record_pk).as_dict())
 
 
+def record_update_json(request, ledger_pk, record_pk):
+    new_record_state = json.loads(request.body)
+    updated_record = Record.objects.get(pk=record_pk).update_from_dict(new_record_state)
+    return JsonResponse(updated_record.as_dict())
+
+
 def record_list(request, ledger_pk):
     ledger = Ledger.objects.get(pk=ledger_pk)
     records = Record.objects.filter(ledger=ledger_pk).order_by('-date')

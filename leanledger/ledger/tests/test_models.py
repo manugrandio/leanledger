@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from unittest.mock import Mock, patch
 
 from django.test import TestCase
 from django.contrib.auth.models import User
@@ -13,10 +14,14 @@ def set_up_class(test_case):
     test_case.record = Record.objects.create(date=date(2019, 9, 14), ledger=test_case.ledger)
     test_case.account_cash = Account.objects.create(
         name='cash', type=Account.DESTINATION, ledger=test_case.ledger)
+    test_case.account_bank = Account.objects.create(
+        name="bank", type=Account.DESTINATION, ledger=test_case.ledger)
     test_case.account_expense_one = Account.objects.create(
         name='expense one', type=Account.ORIGIN, ledger=test_case.ledger)
     test_case.account_expense_two = Account.objects.create(
         name='expense two', type=Account.ORIGIN, ledger=test_case.ledger)
+    test_case.account_expense_three = Account.objects.create(
+        name='expense three', type=Account.ORIGIN, ledger=test_case.ledger)
     test_case.variation_cash = Variation.objects.create(
         amount=-100, record=test_case.record, account=test_case.account_cash)
     test_case.variation_expense_one = Variation.objects.create(
@@ -109,8 +114,7 @@ class TestAccount(TestCase):
 
 
 class TestRecord(TestCase):
-    setUpClass = classmethod(set_up_class)
-    tearDownClass = classmethod(tear_down_class)
+    setUp = set_up_class
 
     def test_variations_by_type(self):
         variations_by_type_iter = self.record.variations_by_type()
@@ -166,16 +170,172 @@ class TestRecord(TestCase):
         }
         self.assertEqual(record_dict, expected)
 
+    def test_update_from_dict_record(self):
+        new_record_state = {
+            "date": "2020-01-01",
+            "id": self.record.pk,
+            "is_balanced": True,
+            "description": "New description",
+            "variations": {"credit": [{"account_name": "cash",
+                                       "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
+                                       "amount": 100.0,
+                                       "id": self.variation_cash.pk}],
+                           "debit": [{"account_name": "expense two",
+                                      "account_url": self.account_expense_two.get_absolute_url(),
+                                      "account_id": self.account_expense_two.pk,
+                                      "amount": 60.0,
+                                      "id": self.variation_expense_two.pk},
+                                     {"account_name": "expense one",
+                                      "account_url": self.account_expense_one.get_absolute_url(),
+                                      "account_id": self.account_expense_one.pk,
+                                      "amount": 40.0,
+                                      "id": self.variation_expense_one.pk}]}
+        }
+
+        with patch.object(Variation, "objects") as variation_objects:
+            self.record.update_from_dict(new_record_state)
+
+        variation_objects.create_variations_from_dict.assert_called_once()
+        variation_objects.update_variations_from_dict.assert_called_once()
+        variation_objects.delete_variations_from_dict.assert_called_once()
+        self.assertEqual(self.record.date, date(2020, 1, 1))
+        self.assertEqual(self.record.description, "New description")
+
 
 class TestVariation(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        set_up_class(cls)
-        cls.record_2 = Record.objects.create(date=date(2019, 10, 14), ledger=cls.ledger)
-        Variation.objects.create(amount=-200, record=cls.record_2, account=cls.account_cash)
-        Variation.objects.create(amount=-200, record=cls.record_2, account=cls.account_expense_one)
+    def setUp(self):
+        set_up_class(self)
+        self.record_2 = Record.objects.create(date=date(2019, 10, 14), ledger=self.ledger)
+        self.variation_cash_2 = Variation.objects.create(
+            amount=-200, record=self.record_2, account=self.account_cash
+        )
+        self.variation_expense_one_2 = Variation.objects.create(
+            amount=-200, record=self.record_2, account=self.account_expense_one
+        )
 
     tearDownClass = classmethod(tear_down_class)
 
+    def test_create_variations_from_dict(self):
+        variations_state = {"credit": [{"account_name": "cash",
+                                       "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
+                                       "amount": 100.0,
+                                       "id": self.variation_cash.pk},
+                                      # New variation:
+                                      {"account_name": "bank",
+                                       "account_url": self.account_bank.get_absolute_url(),
+                                       "account_id": self.account_bank.pk,
+                                       "amount": 50.0,
+                                       # Non-existing id in "credit" group
+                                       "id": self.variation_cash.pk + 1}],
+                           "debit": [{"account_name": "expense two",
+                                      "account_url": self.account_expense_two.get_absolute_url(),
+                                      "account_id": self.account_expense_two.pk,
+                                      "amount": 60.0,
+                                      "id": self.variation_expense_two.pk},
+                                     {"account_name": "expense one",
+                                      "account_url": self.account_expense_one.get_absolute_url(),
+                                      "account_id": self.account_expense_one.pk,
+                                      "amount": 40.0,
+                                      "id": self.variation_expense_one.pk}]}
+        existing_variations = self.record.variations_by_type()
+        n_variations = self.record.variations.count()
+
+        Variation.objects.create_variations_from_dict(
+            self.record, existing_variations, variations_state
+        )
+
+        # If it doesn't exist, an exception will be raised:
+        self.record.variations.get(account__name="bank")
+        self.assertEqual(self.record.variations.count(), n_variations + 1)
+
+    def test_update_variations_from_dict(self):
+        variations_state = {"credit": [{"account_name": "cash",
+                                       "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
+                                       "amount": 100.0,
+                                       "id": self.variation_cash.pk}],
+                           "debit": [{"account_name": "expense three",
+                                      # Same variation, but new account and amount
+                                      "account_url": self.account_expense_three.get_absolute_url(),
+                                      "account_id": self.account_expense_three.pk,
+                                      "amount": 70.0,
+                                      "id": self.variation_expense_two.pk},
+                                     {"account_name": "expense one",
+                                      "account_url": self.account_expense_one.get_absolute_url(),
+                                      "account_id": self.account_expense_one.pk,
+                                      "amount": 30.0,
+                                      "id": self.variation_expense_one.pk}]}
+        existing_variations = self.record.variations_by_type()
+
+        Variation.objects.update_variations_from_dict(existing_variations, variations_state)
+
+        self.variation_expense_two.refresh_from_db()
+        self.assertEqual(self.variation_expense_two.amount, -70)
+        self.assertEqual(self.variation_expense_two.account.pk, self.account_expense_three.pk)
+
+    def test_delete_variations_from_dict(self):
+        variations_state = {"credit": [{"account_name": "cash",
+                                       "account_url": self.account_cash.get_absolute_url(),
+                                       "account_id": self.account_cash.pk,
+                                       "amount": 100.0,
+                                       "id": self.variation_cash.pk}],
+                           # Expense one is deleted
+                           "debit": [{"account_name": "expense two",
+                                      "account_url": self.account_expense_two.get_absolute_url(),
+                                      "account_id": self.account_expense_two.pk,
+                                      "amount": 60,
+                                      "id": self.variation_expense_two.pk}]}
+        existing_variations = self.record.variations_by_type()
+
+        Variation.objects.delete_variations_from_dict(existing_variations, variations_state)
+
+        self.assertFalse(Variation.objects.filter(pk=self.variation_expense_one.pk).exists())
+
     def test_total(self):
         self.assertEqual(self.account_cash.variations.total, Decimal('-300'))
+
+    def test_type(self):
+        # TODO
+        pass
+
+    def test_is_increase(self):
+        types = [
+            (Mock(type=Account.DESTINATION), Variation.DEBIT, True),
+            (Mock(type=Account.DESTINATION), Variation.CREDIT, False),
+            (Mock(type=Account.ORIGIN), Variation.DEBIT, False),
+            (Mock(type=Account.ORIGIN), Variation.CREDIT, True),
+        ]
+        for account, variation_type, expected in types:
+            is_increase = Variation.is_increase(account, variation_type)
+            with self.subTest(account_type=account.type, variation_type=variation_type):
+                self.assertTrue(is_increase is expected)
+
+    def test_update_from_dict_amount(self):
+        new_variation_state = {
+            "account_name": "cash",
+            "account_url": self.account_cash.get_absolute_url(),
+            "account_id": self.account_cash.pk,
+            "amount": 50.0,
+            "id": self.variation_cash.pk
+        }
+
+        self.variation_cash.update_from_dict(new_variation_state, Variation.CREDIT)
+
+        self.assertEqual(self.variation_cash.amount, -50)
+        self.assertEqual(self.variation_cash.account.pk, self.account_cash.pk)
+
+    def test_update_from_dict_account(self):
+        new_variation_state = {
+            "account_name": "expense two",
+            "account_url": self.account_expense_two.get_absolute_url(),
+            "account_id": self.account_expense_two.pk,
+            "amount": 200,
+            "id": self.variation_expense_one.pk
+        }
+
+        self.variation_expense_one.update_from_dict(new_variation_state, Variation.DEBIT)
+
+        self.assertEqual(self.variation_expense_one.account.pk, self.account_expense_two.pk)
+        self.assertEqual(self.variation_expense_one.amount, -200)
