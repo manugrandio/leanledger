@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Cookies from "js-cookie";
 
 
 const DEBIT = "debit";
@@ -8,7 +9,7 @@ const CREDIT = "credit";
 class Record extends Component {
   constructor(props) {
     super(props);
-    this.state = {record: null, editMode: false, accounts: null};
+    this.state = {record: null, editMode: false, accounts: null, isSaving: false};
     this.getRecord();
   }
 
@@ -55,9 +56,27 @@ class Record extends Component {
       });
   }
 
-  finishUpdate() {
-    // TODO update record to back-end
-    this.setState({ editMode: false });
+  finishUpdate(e) {
+    e.preventDefault();
+    const { origin, ledgerId } = this.getUrlParts();
+    const urlPath = `/ledger/${ledgerId}/record/${this.state.record.id}/update.json`;
+    const recordUpdateUrl = origin + urlPath;
+    const fetchOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": Cookies.get("csrftoken"),
+      },
+      body: JSON.stringify(this.state.record),
+    };
+    this.setState({ isSaving: true });
+    fetch(recordUpdateUrl, fetchOptions)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({ editMode: false, isSaving: false, record: data});
+      });
   }
 
   onChange(field, e) {
@@ -117,6 +136,7 @@ class Record extends Component {
             {...this.state.record}
             onChange={ (field, e) => this.onChange(field, e) }
             editMode={ this.state.editMode }
+            isSaving={ this.state.isSaving }
             enterEditMode={ (e) => this.enterEditMode(e) }
           />
           <RecordBody
@@ -127,7 +147,8 @@ class Record extends Component {
             changeVariationAccount={ (e, variationType, variationId) => this.changeVariationAccount(e, variationType, variationId) }
             changeVariationAmount={ (e, variationType, variationId) => this.changeVariationAmount(e, variationType, variationId) }
             editMode={ this.state.editMode }
-            finishUpdate={ () => this.finishUpdate() }
+            isSaving={ this.state.isSaving }
+            finishUpdate={ (e) => this.finishUpdate(e) }
           />
         </>
       );
@@ -158,6 +179,7 @@ class RecordHeader extends Component {
               className="form-control form-control-sm"
               value={ this.props.date }
               onChange={ (e) => this.props.onChange("date", e) }
+              disabled={ this.props.isSaving }
             />
           </div>
           <div className="col">
@@ -167,6 +189,7 @@ class RecordHeader extends Component {
               className="form-control form-control-sm"
               value={ this.props.description }
               onChange={ (e) => this.props.onChange("description", e) }
+              disabled={ this.props.isSaving }
             />
           </div>
         </div>
@@ -217,6 +240,7 @@ class RecordBody extends Component {
             }
           }
           editMode={ this.props.editMode }
+          isSaving={ this.props.isSaving }
           accounts={ this.props.accounts }
           {...variation}
         />
@@ -233,7 +257,8 @@ class RecordBody extends Component {
       finishUpdateBtn = (
         <button
           className="btn btn-primary mt-3"
-          onClick={ () => this.props.finishUpdate() }
+          onClick={ (e) => this.props.finishUpdate(e) }
+          disabled={ this.props.isSaving }
         >
           Done
         </button>
@@ -308,6 +333,7 @@ class Variation extends Component {
           className={ "form-control form-control-sm " + accountColumnClass } onChange={ () => null }
           onChange={ (e) => this.props.changeVariationAccount(e, this.props.variationType, this.props.id) }
           value={ this.props.account_id.toString() }
+          disabled={ this.props.isSaving }
         >
           { accountColumnOptions }
         </select>
@@ -319,6 +345,7 @@ class Variation extends Component {
             className="form-control form-control-sm"
             value={ this.props.amount }
             onChange={ (e) => this.props.changeVariationAmount(e, this.props.variationType, this.props.id) }
+            disabled={ this.props.isSaving }
           />
         </td>
       );
