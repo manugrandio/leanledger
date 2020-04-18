@@ -1,14 +1,31 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<ul>
-{% for ledger in ledgers %}
-  <li>
-    <a href="{% url 'record_list' ledger.pk %}">{{ ledger.name }}</a>
-    (<a href="{% url 'ledger_update' ledger.pk %}">Update</a>, <a href="{% url 'ledger_delete' ledger.pk %}">Delete</a>)
-  </li>
-{% endfor %}
-</ul>
 
-<a href="{% url 'ledger_create' %}">New</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <a class="navbar-brand" href="{% url 'ledger_list' %}">Ledgers</a>
+</nav>
+
+<main class="bg-light pb-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6 mt-4">
+        <a class="btn btn-primary float-right" href="{% url 'ledger_create' %}">New Ledger</a>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-6 mt-1">
+        {% for ledger in ledgers %}
+          <div class="card mt-2">
+            <div class="card-body">
+              <a href="{% url 'record_list' ledger.pk %}">{{ ledger.name }}</a>
+              (<a href="{% url 'ledger_update' ledger.pk %}">Update</a>, <a href="{% url 'ledger_delete' ledger.pk %}">Delete</a>)
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</main>
+
 {% endblock %}
