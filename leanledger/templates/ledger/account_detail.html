@@ -24,12 +24,12 @@
       <p><strong>Total: {{ account.total }}</strong></p>
 
       {% if account.children.all.exists %}
-        <h2>Children accounts</h2>
+        <p>Children accounts:</p>
         {% include 'ledger/accounts_tree.html' with accounts=account.children.all %}
       {% endif %}
 
       {% if account.variations.all %}
-        <h2>Records</h2>
+        <p>Records:</p>
 
         <ul>
           {% for variation in account.variations.all %}
