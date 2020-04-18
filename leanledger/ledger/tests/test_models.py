@@ -247,7 +247,9 @@ class TestVariation(TestCase):
         )
 
         # If it doesn't exist, an exception will be raised:
-        self.record.variations.get(account__name="bank")
+        new_variation = self.record.variations.get(account__name="bank")
+        # Amount sign is changed according to account type and variation type (debit/credit)
+        self.assertEqual(new_variation.amount, -50)
         self.assertEqual(self.record.variations.count(), n_variations + 1)
 
     def test_update_variations_from_dict(self):
@@ -295,6 +297,22 @@ class TestVariation(TestCase):
 
     def test_total(self):
         self.assertEqual(self.account_cash.variations.total, Decimal('-300'))
+
+    def test_from_dict(self):
+        """
+        A credit of an account of type "destination" means it's a balance decrease
+        """
+        variation_dict = {
+            "account_name": "cash",
+            "account_url": self.account_cash.get_absolute_url(),
+            "account_id": self.account_cash.pk,
+            "amount": 70,
+            "id": 1,
+        }
+
+        variation = Variation.from_dict(variation_dict, Variation.CREDIT, self.record)
+
+        self.assertEqual(variation.amount, -70)
 
     def test_type(self):
         # TODO

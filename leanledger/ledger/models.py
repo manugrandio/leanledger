@@ -151,19 +151,15 @@ class VariationManager(models.Manager):
         existing id within a variation type in a record. So there is no risk of generating an
         existing id.
         """
-        variations_to_create = {}
+        to_create = []
         for variation_type, variations in variations_state.items():
             existing_variations_pks = [v.pk for v in existing_variations[variation_type]]
-            variations_to_create[variation_type] = [
-                Variation(
-                    amount=v["amount"],
-                    account=Account.objects.get(pk=v["account_id"]),
-                    record=record,
-                ) for v in variations if v["id"] not in existing_variations_pks
+            to_create += [
+                Variation.from_dict(variation, variation_type, record)
+                for variation in variations if variation["id"] not in existing_variations_pks
             ]
 
-        Variation.objects.bulk_create(variations_to_create[Variation.DEBIT])
-        Variation.objects.bulk_create(variations_to_create[Variation.CREDIT])
+        Variation.objects.bulk_create(to_create)
 
     def update_variations_from_dict(self, existing_variations, variations_state):
         for variation_type, variations in existing_variations.items():
@@ -192,6 +188,20 @@ class Variation(models.Model):
 
     objects = VariationManager()
 
+    @classmethod
+    def from_dict(cls, variation_dict, variation_type, record):
+        account = Account.objects.get(pk=variation_dict["account_id"])
+        is_increase = cls.is_increase(account, variation_type)
+        amount = (1 if is_increase else -1) * variation_dict["amount"]
+        return Variation(amount=amount, account=account, record=record)
+
+    @classmethod
+    def is_increase(cls, account, type_):
+        if account.type == Account.ORIGIN:
+            return type_ == cls.CREDIT
+        else:
+            return type_ == cls.DEBIT
+
     @property
     def type(self):
         is_increase = self.amount > 0
@@ -199,14 +209,6 @@ class Variation(models.Model):
             return self.CREDIT if is_increase else self.DEBIT
         else:
             return self.DEBIT if is_increase else self.CREDIT
-
-    @classmethod
-    def is_increase(cls, account, type_):
-        # TODO does it need to be a classmethod?
-        if account.type == Account.ORIGIN:
-            return type_ == cls.CREDIT
-        else:
-            return type_ == cls.DEBIT
 
     def as_dict(self):
         return {
