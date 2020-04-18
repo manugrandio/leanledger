@@ -128,7 +128,11 @@ class Record extends Component {
 
   render() {
     if (this.state.record === null) {
-      return <p className="mt-3">Loading…</p>;
+      return (
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading…</span>
+        </div>
+      );
     } else {
       const cardContent = (
         <>
@@ -253,6 +257,12 @@ class RecordBody extends Component {
     const creditVariations = this.getVariationsList(CREDIT);
 
     let finishUpdateBtn = null, addDebitVariationBtn = null, addCreditVariationBtn = null;
+    let finishUpdateBtnContent = !this.props.isSaving ? "Done" : (
+      <>
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span class="sr-only">Loading...</span>
+      </>
+    );
     if (this.props.editMode) {
       finishUpdateBtn = (
         <button
@@ -260,7 +270,7 @@ class RecordBody extends Component {
           onClick={ (e) => this.props.finishUpdate(e) }
           disabled={ this.props.isSaving }
         >
-          Done
+          { finishUpdateBtnContent }
         </button>
       );
       addDebitVariationBtn = (
